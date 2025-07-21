@@ -52,11 +52,19 @@ public class FixedScheduleController {
         return "client/schedule/add"; // tái sử dụng form add
     }
 
-    // Tự động lập lịch (gợi ý)
-    @GetMapping("/auto-generate")
-    public String autoGenerateSchedule(Model model) {
-        List<GeneratedScheduleDTO> suggestedSchedule = fixedScheduleService.generateOptimalSchedule();
+    // Tự động lập lịch sớm nhất và tư động lập lịch thời gian rảnh
+    @PostMapping("/auto-generate")
+    public String autoGenerateSchedule(@RequestParam(name = "mode", defaultValue = "early") String mode, Model model) {
+        List<GeneratedScheduleDTO> suggestedSchedule;
+
+        if (mode.equals("balanced")) {
+            suggestedSchedule = fixedScheduleService.generateBalancedSchedule();
+        } else {
+            suggestedSchedule = fixedScheduleService.generateOptimalSchedule(); // mặc định
+        }
+
         model.addAttribute("suggestedSchedule", suggestedSchedule);
-        return "client/schedule/suggested"; // View gợi ý lịch
+        return "client/schedule/suggested";
     }
+
 }

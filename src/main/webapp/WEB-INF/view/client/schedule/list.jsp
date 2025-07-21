@@ -48,16 +48,14 @@
             </c:if>
 
             <div style="text-align: center; margin-bottom: 20px;">
-                <form action="${pageContext.request.contextPath}/schedule/auto-generate" method="get">
-                    <button type="submit" style="
-            padding: 10px 20px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;">
-                        Tự động lập lịch
-                    </button>
+                <form action="${pageContext.request.contextPath}/schedule/auto-generate" method="post"
+                    style="display: inline;">
+                    <label>Chế độ lập lịch:</label>
+                    <select name="mode">
+                        <option value="early">Tối ưu hoàn thành sớm</option>
+                        <option value="balanced">Phân tán đều</option>
+                    </select>
+                    <button type="submit">Tự động lập lịch</button>
                 </form>
             </div>
 
