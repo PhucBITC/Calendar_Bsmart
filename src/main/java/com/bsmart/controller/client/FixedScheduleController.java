@@ -21,12 +21,14 @@ public class FixedScheduleController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("schedule", new FixedSchedule());
-        return "client/schedule/add";
+        return "client/schedule/lichmoi";
     }
 
     // Lưu hoặc cập nhật lịch
     @PostMapping("/save")
-    public String save(@ModelAttribute("schedule") FixedSchedule schedule) {
+    public String save(@ModelAttribute FixedSchedule schedule) {
+        System.out.println(schedule.getStartTime()); // check giá trị
+        System.out.println(schedule.getEndTime());
         fixedScheduleService.saveSchedule(schedule);
         return "redirect:/schedule/list";
     }

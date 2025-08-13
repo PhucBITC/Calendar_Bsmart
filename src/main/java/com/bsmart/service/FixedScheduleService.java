@@ -8,8 +8,10 @@ import com.bsmart.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -47,20 +49,21 @@ public class FixedScheduleService {
         fixedScheduleRepository.deleteById(id);
     }
 
-    // ================== Thuật toán lập lịch tự động ====================
-    public List<GeneratedScheduleDTO> generateOptimalSchedule() {
+    // Hàm phân bổ thời gian hợp lý
+    public List<GeneratedScheduleDTO> generateBalancedSchedule() {
         List<FixedSchedule> fixedSchedules = fixedScheduleRepository.findAll();
         List<Task> tasks = taskRepository.findAll();
+        LocalDate today = LocalDate.now();
 
         String[] days = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
         Map<String, List<TimeSlot>> availableSlots = new HashMap<>();
 
-        // Khởi tạo slot trống ban đầu: 08:00 - 22:00 mỗi ngày
+        // Khởi tạo khung giờ trống ban đầu
         for (String day : days) {
             availableSlots.put(day, getInitialSlots());
         }
 
-        // Loại bỏ các khoảng thời gian đã bị chiếm bởi lịch học cố định
+        // Loại bỏ các slot bị chiếm bởi lịch học cố định
         for (FixedSchedule fs : fixedSchedules) {
             List<TimeSlot> current = availableSlots.get(fs.getDayOfWeek());
             if (current != null) {
@@ -69,7 +72,7 @@ public class FixedScheduleService {
             }
         }
 
-        // So sánh ưu tiên rõ ràng
+        // Comparator cho ưu tiên
         Comparator<Task.Priority> priorityComparator = Comparator.comparingInt(priority -> {
             switch (priority) {
                 case HIGH:
@@ -83,63 +86,56 @@ public class FixedScheduleService {
             }
         });
 
-        // Sắp xếp theo deadline gần nhất → rồi theo mức độ ưu tiên
+        // Sắp xếp task theo deadline trước, ưu tiên sau
         tasks.sort(
                 Comparator.comparing(Task::getDeadline)
                         .thenComparing(Task::getPriority, priorityComparator));
 
         List<GeneratedScheduleDTO> result = new ArrayList<>();
 
+        // Duyệt từng task và chia đều
         for (Task task : tasks) {
-            int duration = task.getDuration(); // giờ
-            boolean scheduled = false;
+            int totalDuration = task.getDuration(); // Tổng số giờ
+            LocalDate deadline = task.getDeadline();
+            long daysLeft = ChronoUnit.DAYS.between(today, deadline) + 1; // Số ngày còn lại
 
-            for (String day : days) {
-                List<TimeSlot> slots = availableSlots.get(day);
-                if (slots == null || slots.isEmpty())
-                    continue;
+            if (daysLeft <= 0) {
+                daysLeft = 1; // Nếu deadline <= hôm nay
+            }
 
-                // Tìm nhiều slot cộng lại đủ thời gian
-                int remaining = duration;
-                List<TimeSlot> usedSlots = new ArrayList<>();
+            // Số giờ mỗi ngày (chia đều)
+            int hoursPerDay = (int) Math.ceil((double) totalDuration / daysLeft);
 
-                for (TimeSlot slot : slots) {
-                    if (slot.getDuration() <= 0)
-                        continue;
+            LocalDate currentDay = today;
+            while (totalDuration > 0 && !currentDay.isAfter(deadline)) {
+                String dayOfWeek = currentDay.getDayOfWeek().toString();
+                List<TimeSlot> slots = availableSlots.get(dayOfWeek);
 
-                    usedSlots.add(slot);
-                    remaining -= slot.getDuration();
+                if (slots != null && !slots.isEmpty()) {
+                    for (TimeSlot slot : new ArrayList<>(slots)) {
+                        int allocate = Math.min(hoursPerDay, totalDuration);
 
-                    if (remaining <= 0)
-                        break;
-                }
+                        if (slot.getDuration() >= allocate) {
+                            LocalTime start = slot.getStartTime();
+                            LocalTime end = start.plusHours(allocate);
 
-                if (remaining <= 0) {
-                    // Gán thời gian từ slot đầu đến slot cuối (chia nhỏ nếu cần)
-                    LocalTime start = usedSlots.get(0).getStartTime();
-                    int totalHours = duration;
-                    LocalTime end = start;
+                            result.add(new GeneratedScheduleDTO(
+                                    task.getTitle(),
+                                    dayOfWeek,
+                                    start.toString(),
+                                    end.toString(),
+                                    task.getPriority().name()));
 
-                    for (TimeSlot s : usedSlots) {
-                        int hours = Math.min(s.getDuration(), totalHours);
-                        end = s.getStartTime().plusHours(hours);
-                        totalHours -= hours;
-                        if (totalHours <= 0)
-                            break;
+                            totalDuration -= allocate;
+
+                            // Cập nhật slot
+                            TimeSlot used = new TimeSlot(start, end);
+                            availableSlots.put(dayOfWeek, subtractSlot(slots, used));
+                            break; // Chuyển sang ngày tiếp theo
+                        }
                     }
-
-                    result.add(new GeneratedScheduleDTO(
-                            task.getTitle(), day,
-                            start.toString(), end.toString(),
-                            task.getPriority().name()));
-
-                    // Cập nhật slot còn trống sau khi dùng
-                    TimeSlot usedTime = new TimeSlot(start, end);
-                    availableSlots.put(day, subtractSlot(slots, usedTime));
-
-                    scheduled = true;
-                    break;
                 }
+                currentDay = currentDay.plusDays(1); // Chuyển ngày
             }
         }
 
@@ -185,7 +181,8 @@ public class FixedScheduleService {
         return result;
     }
 
-    public List<GeneratedScheduleDTO> generateBalancedSchedule() {
+    // Hàm tối ưu thời gian sớm nhất để hoàn thành công việc
+    public List<GeneratedScheduleDTO> generateOptimalSchedule() {
         List<FixedSchedule> fixedSchedules = fixedScheduleRepository.findAll();
         List<Task> tasks = taskRepository.findAll();
 

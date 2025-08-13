@@ -3,6 +3,8 @@ package com.bsmart.domain;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "fixed_schedule")
 public class FixedSchedule {
@@ -12,12 +14,17 @@ public class FixedSchedule {
     private Long id;
 
     private String dayOfWeek; // Ví dụ: MONDAY, TUESDAY
+    private String description;
 
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;
 
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
-    private String description; // Ví dụ: "Lập trình Java", "Sinh hoạt CLB"
+    private String color;
+
+    // Ví dụ: "Lập trình Java", "Sinh hoạt CLB"
 
     // ====== GET / SET ======
 
@@ -59,5 +66,13 @@ public class FixedSchedule {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
