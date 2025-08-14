@@ -178,8 +178,7 @@
                             </c:if>
 
                             <!-- Form đăng nhập -->
-                            <form:form method="post" action="${pageContext.request.contextPath}/auth/login"
-                                modelAttribute="loginDTO">
+                            <form method="post" action="${pageContext.request.contextPath}/auth/login">
                                 <div class="form-group">
                                     <label class="form-label" for="username">
                                         <i class="fas fa-user me-2"></i>Tên đăng nhập hoặc Email
@@ -188,11 +187,10 @@
                                         <span class="input-group-text">
                                             <i class="fas fa-user text-muted"></i>
                                         </span>
-                                        <form:input path="username" class="form-control" id="username"
+                                        <input type="text" name="username" class="form-control" id="username"
                                             placeholder="Nhập tên đăng nhập hoặc email" required="true"
                                             autocomplete="username" />
                                     </div>
-                                    <form:errors path="username" cssClass="text-danger small mt-1 d-block" />
                                 </div>
 
                                 <div class="form-group">
@@ -203,15 +201,14 @@
                                         <span class="input-group-text">
                                             <i class="fas fa-lock text-muted"></i>
                                         </span>
-                                        <form:password path="password" class="form-control" id="password"
+                                        <input type="password" name="password" class="form-control" id="password"
                                             placeholder="Nhập mật khẩu" required="true"
                                             autocomplete="current-password" />
                                     </div>
-                                    <form:errors path="password" cssClass="text-danger small mt-1 d-block" />
                                 </div>
 
                                 <div class="remember-me">
-                                    <form:checkbox path="rememberMe" class="form-check-input" id="rememberMe" />
+                                    <input type="checkbox" name="remember-me" class="form-check-input" id="rememberMe" />
                                     <label class="form-check-label" for="rememberMe">
                                         Ghi nhớ đăng nhập
                                     </label>
@@ -220,7 +217,7 @@
                                 <button type="submit" class="btn btn-login">
                                     <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
                                 </button>
-                            </form:form>
+                            </form>
                         </div>
 
                         <div class="login-footer">

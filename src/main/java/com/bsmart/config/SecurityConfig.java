@@ -37,7 +37,7 @@ public class SecurityConfig {
         @Bean
         public AuthenticationSuccessHandler authenticationSuccessHandler() {
                 SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
-                handler.setDefaultTargetUrl("/client/task/list");
+                handler.setDefaultTargetUrl("/schedule/add");
                 handler.setUseReferer(false);
                 return handler;
         }
@@ -52,14 +52,28 @@ public class SecurityConfig {
                                                                 "/client/css/**",
                                                                 "/client/js/**",
                                                                 "/client/image/**",
-                                                                "/resources/**")
+                                                                "/resources/**",
+                                                                "/",
+                                                                "/hello")
                                                 .permitAll()
-                                                .anyRequest().permitAll() // tất cả request khác cũng được
+                                                // Yêu cầu đăng nhập cho các endpoint quan trọng
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/schedule/**").authenticated()
+                                                .anyRequest().permitAll()
                                 )
-                                .csrf(csrf -> csrf.disable()); // tạm thời tắt CSRF để form login custom hoạt động
-
-                // Không dùng Spring Security form login
-                http.formLogin().disable();
+                                .csrf(csrf -> csrf.disable()) // tạm thời tắt CSRF để form login custom hoạt động
+                                .formLogin(form -> form
+                                                .loginPage("/auth/login")
+                                                .loginProcessingUrl("/auth/login")
+                                                .successHandler(authenticationSuccessHandler())
+                                                .failureUrl("/auth/login?error=true")
+                                                .permitAll()
+                                )
+                                .logout(logout -> logout
+                                                .logoutUrl("/auth/logout")
+                                                .logoutSuccessUrl("/auth/login?logout=true")
+                                                .permitAll()
+                                );
 
                 return http.build();
         }

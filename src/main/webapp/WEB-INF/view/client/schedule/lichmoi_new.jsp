@@ -8,6 +8,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <title>BSmart Calendar - Lịch thông minh</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary-color: #2563eb;
             --secondary-color: #64748b;
@@ -34,12 +40,6 @@
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             background-color: var(--light-bg);
             color: var(--light-text);
@@ -52,7 +52,7 @@
             color: var(--dark-text);
         }
 
-        /* Header */
+        /* Header Styles */
         .header {
             background: white;
             border-bottom: 1px solid var(--border-color);
@@ -283,7 +283,6 @@
             font-size: 0.875rem;
             width: 100%;
             justify-content: center;
-            margin-bottom: 1rem;
         }
 
         .button--primary {
@@ -471,11 +470,6 @@
             padding: 0.5rem;
             min-height: 80px;
             position: relative;
-            cursor: pointer;
-        }
-
-        .calendar__day:hover {
-            background: var(--light-bg);
         }
 
         .calendar__day:nth-child(7n) {
@@ -498,154 +492,6 @@
 
         .calendar__day--other-month {
             opacity: 0.5;
-        }
-
-        .calendar__event {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            margin-bottom: 0.25rem;
-            cursor: pointer;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            min-width: 500px;
-            max-width: 90vw;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        [data-theme="dark"] .modal-content {
-            background: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--secondary-color);
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.25rem;
-            background: var(--light-bg);
-            color: var(--light-text);
-        }
-
-        [data-theme="dark"] .form-group input,
-        [data-theme="dark"] .form-group select,
-        [data-theme="dark"] .form-group textarea {
-            background: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-
-        /* Task Management */
-        .task-section {
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .task-form {
-            background: var(--light-bg);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        [data-theme="dark"] .task-form {
-            background: var(--dark-bg);
-        }
-
-        .task-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .task-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1rem;
-        }
-
-        [data-theme="dark"] .task-card {
-            background: var(--dark-bg);
-        }
-
-        .task-priority {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .priority-high {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-
-        .priority-medium {
-            background: #fffbeb;
-            color: #d97706;
-        }
-
-        .priority-low {
-            background: #f0fdf4;
-            color: #16a34a;
         }
 
         /* Responsive */
@@ -673,12 +519,6 @@
                 width: 100%;
                 height: 100%;
                 z-index: 1000;
-            }
-
-            .modal-content {
-                min-width: auto;
-                width: 95vw;
-                margin: 1rem;
             }
         }
     </style>
@@ -739,17 +579,9 @@
                 <i class="fas fa-plus"></i> Tạo lịch mới
             </button>
             
-            <button class="button button--secondary button--lg" id="generate-smart">
+            <button class="button button--secondary button--lg" id="generate-smart" style="margin-top: 1rem;">
                 <i class="fas fa-magic"></i> Sinh lịch thông minh
             </button>
-
-            <!-- Task Management Section -->
-            <div class="task-section">
-                <h4 style="margin-bottom: 1rem;">Quản lý Task</h4>
-                <button class="button button--secondary" id="add-task-btn">
-                    <i class="fas fa-plus"></i> Thêm Task
-                </button>
-            </div>
 
             <div class="settings-section">
                 <div class="settings-title">
@@ -813,83 +645,32 @@
     </div>
 
     <!-- Event Form Modal -->
-    <div id="event-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="event-modal-title">Tạo lịch mới</h3>
-                <button class="modal-close" id="event-modal-close">&times;</button>
-            </div>
+    <div id="event-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 0.5rem; min-width: 400px;">
+            <h3 style="margin-bottom: 1rem;">Tạo lịch mới</h3>
             <form id="event-form">
-                <input type="hidden" id="event-id">
-                <div class="form-group">
-                    <label>Mô tả:</label>
-                    <input type="text" id="event-description" required>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem;">Mô tả:</label>
+                    <input type="text" id="event-description" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 0.25rem;">
                 </div>
-                <div class="form-group">
-                    <label>Ngày:</label>
-                    <input type="date" id="event-date" required>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem;">Ngày:</label>
+                    <input type="date" id="event-date" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 0.25rem;">
                 </div>
-                <div class="form-group">
-                    <label>Giờ bắt đầu:</label>
-                    <input type="time" id="event-start-time" required>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem;">Giờ bắt đầu:</label>
+                    <input type="time" id="event-start-time" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 0.25rem;">
                 </div>
-                <div class="form-group">
-                    <label>Giờ kết thúc:</label>
-                    <input type="time" id="event-end-time" required>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem;">Giờ kết thúc:</label>
+                    <input type="time" id="event-end-time" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 0.25rem;">
                 </div>
-                <div class="form-group">
-                    <label>Màu sắc:</label>
-                    <input type="color" id="event-color" value="#2563eb">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem;">Màu sắc:</label>
+                    <input type="color" id="event-color" value="#2563eb" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 0.25rem;">
                 </div>
-                <div class="form-actions">
-                    <button type="button" id="event-delete-btn" class="btn btn-secondary" style="display: none;">
-                        <i class="fas fa-trash"></i> Xóa
-                    </button>
-                    <button type="button" id="event-cancel-btn" class="btn btn-secondary">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Task Form Modal -->
-    <div id="task-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="task-modal-title">Thêm Task mới</h3>
-                <button class="modal-close" id="task-modal-close">&times;</button>
-            </div>
-            <form id="task-form">
-                <input type="hidden" id="task-id">
-                <div class="form-group">
-                    <label>Tên task:</label>
-                    <input type="text" id="task-title" required>
-                </div>
-                <div class="form-group">
-                    <label>Mô tả:</label>
-                    <textarea id="task-description" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Mức độ ưu tiên:</label>
-                    <select id="task-priority" required>
-                        <option value="HIGH">Cao</option>
-                        <option value="MEDIUM">Trung bình</option>
-                        <option value="LOW">Thấp</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Deadline:</label>
-                    <input type="datetime-local" id="task-deadline" required>
-                </div>
-                <div class="form-group">
-                    <label>Thời gian ước tính (phút):</label>
-                    <input type="number" id="task-duration" min="15" step="15" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" id="task-delete-btn" class="btn btn-secondary" style="display: none;">
-                        <i class="fas fa-trash"></i> Xóa
-                    </button>
-                    <button type="button" id="task-cancel-btn" class="btn btn-secondary">Hủy</button>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" id="cancel-btn" class="btn btn-secondary">Hủy</button>
                     <button type="submit" class="btn btn-primary">Lưu</button>
                 </div>
             </form>
@@ -897,12 +678,6 @@
     </div>
 
     <script>
-        // Global variables
-        let currentDate = new Date();
-        let currentView = 'month';
-        let events = [];
-        let tasks = [];
-
         // Theme management
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
@@ -940,10 +715,14 @@
         });
 
         // Calendar functionality
+        let currentDate = new Date();
+        let currentView = 'month';
+
         function renderCalendar() {
             const calendar = document.getElementById('calendar');
             const currentDateElement = document.getElementById('current-date');
             
+            // Update current date display
             const options = { year: 'numeric', month: 'long' };
             currentDateElement.textContent = currentDate.toLocaleDateString('vi-VN', options);
             
@@ -984,21 +763,11 @@
                 const isToday = date.getTime() === today.getTime();
                 const isCurrentMonth = date.getMonth() === month;
                 const isOtherMonth = !isCurrentMonth;
-                const dateStr = date.toISOString().split('T')[0];
-                
-                // Get events for this date
-                const dayEvents = events.filter(event => event.dayOfWeek === dateStr);
                 
                 html += `
                     <div class="calendar__day ${isToday ? 'calendar__day--today' : ''} ${isOtherMonth ? 'calendar__day--other-month' : ''}" 
-                         data-date="${dateStr}">
+                         data-date="${date.toISOString().split('T')[0]}">
                         <div class="calendar__day-number">${date.getDate()}</div>
-                        ${dayEvents.map(event => `
-                            <div class="calendar__event" style="background: ${event.color}" 
-                                 onclick="editEvent('${event.id}')">
-                                ${event.description}
-                            </div>
-                        `).join('')}
                     </div>
                 `;
             }
@@ -1009,11 +778,9 @@
             // Add click event to days
             const days = calendar.querySelectorAll('.calendar__day');
             days.forEach(day => {
-                day.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('calendar__event')) {
-                        const date = day.getAttribute('data-date');
-                        openEventModal(date);
-                    }
+                day.addEventListener('click', () => {
+                    const date = day.getAttribute('data-date');
+                    openEventModal(date);
                 });
             });
         }
@@ -1038,55 +805,31 @@
             renderCalendar();
         });
 
+        // View selector
+        document.getElementById('view-select').addEventListener('change', (e) => {
+            currentView = e.target.value;
+            renderCalendar();
+        });
+
         // Event modal
-        function openEventModal(date = null, eventId = null) {
+        function openEventModal(date = null) {
             const modal = document.getElementById('event-modal');
-            const title = document.getElementById('event-modal-title');
             const dateInput = document.getElementById('event-date');
-            const deleteBtn = document.getElementById('event-delete-btn');
             
-            if (eventId) {
-                // Edit mode
-                const event = events.find(e => e.id === eventId);
-                if (event) {
-                    title.textContent = 'Chỉnh sửa lịch';
-                    document.getElementById('event-id').value = event.id;
-                    document.getElementById('event-description').value = event.description;
-                    document.getElementById('event-date').value = event.dayOfWeek;
-                    document.getElementById('event-start-time').value = event.startTime;
-                    document.getElementById('event-end-time').value = event.endTime;
-                    document.getElementById('event-color').value = event.color;
-                    deleteBtn.style.display = 'inline-flex';
-                }
+            if (date) {
+                dateInput.value = date;
             } else {
-                // Create mode
-                title.textContent = 'Tạo lịch mới';
-                document.getElementById('event-id').value = '';
-                document.getElementById('event-form').reset();
-                if (date) {
-                    dateInput.value = date;
-                } else {
-                    dateInput.value = new Date().toISOString().split('T')[0];
-                }
-                deleteBtn.style.display = 'none';
+                dateInput.value = new Date().toISOString().split('T')[0];
             }
             
             modal.style.display = 'block';
-        }
-
-        function editEvent(eventId) {
-            openEventModal(null, eventId);
         }
 
         document.getElementById('create-event-btn').addEventListener('click', () => {
             openEventModal();
         });
 
-        document.getElementById('event-modal-close').addEventListener('click', () => {
-            document.getElementById('event-modal').style.display = 'none';
-        });
-
-        document.getElementById('event-cancel-btn').addEventListener('click', () => {
+        document.getElementById('cancel-btn').addEventListener('click', () => {
             document.getElementById('event-modal').style.display = 'none';
         });
 
@@ -1094,7 +837,6 @@
         document.getElementById('event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const eventId = document.getElementById('event-id').value;
             const formData = {
                 description: document.getElementById('event-description').value,
                 dayOfWeek: document.getElementById('event-date').value,
@@ -1104,11 +846,8 @@
             };
             
             try {
-                const url = eventId ? `/schedule/api/save` : `/schedule/api/save`;
-                const method = 'POST';
-                
-                const response = await fetch(url, {
-                    method: method,
+                const response = await fetch('/schedule/api/save', {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
@@ -1118,114 +857,10 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert(eventId ? 'Lịch đã được cập nhật!' : 'Lịch đã được tạo thành công!');
+                    alert('Lịch đã được tạo thành công!');
                     document.getElementById('event-modal').style.display = 'none';
-                    loadEvents();
-                } else {
-                    alert('Lỗi: ' + result.message);
-                }
-            } catch (error) {
-                alert('Lỗi kết nối mạng');
-            }
-        });
-
-        // Delete event
-        document.getElementById('event-delete-btn').addEventListener('click', async () => {
-            const eventId = document.getElementById('event-id').value;
-            if (!eventId) return;
-            
-            if (confirm('Bạn có chắc muốn xóa lịch này?')) {
-                try {
-                    const response = await fetch(`/schedule/delete/${eventId}`, {
-                        method: 'POST'
-                    });
-                    
-                    if (response.ok) {
-                        alert('Lịch đã được xóa!');
-                        document.getElementById('event-modal').style.display = 'none';
-                        loadEvents();
-                    } else {
-                        alert('Lỗi khi xóa lịch');
-                    }
-                } catch (error) {
-                    alert('Lỗi kết nối mạng');
-                }
-            }
-        });
-
-        // Task modal
-        function openTaskModal(taskId = null) {
-            const modal = document.getElementById('task-modal');
-            const title = document.getElementById('task-modal-title');
-            const deleteBtn = document.getElementById('task-delete-btn');
-            
-            if (taskId) {
-                // Edit mode
-                const task = tasks.find(t => t.id === taskId);
-                if (task) {
-                    title.textContent = 'Chỉnh sửa Task';
-                    document.getElementById('task-id').value = task.id;
-                    document.getElementById('task-title').value = task.title;
-                    document.getElementById('task-description').value = task.description || '';
-                    document.getElementById('task-priority').value = task.priority;
-                    document.getElementById('task-deadline').value = task.deadline;
-                    document.getElementById('task-duration').value = task.duration;
-                    deleteBtn.style.display = 'inline-flex';
-                }
-            } else {
-                // Create mode
-                title.textContent = 'Thêm Task mới';
-                document.getElementById('task-id').value = '';
-                document.getElementById('task-form').reset();
-                deleteBtn.style.display = 'none';
-            }
-            
-            modal.style.display = 'block';
-        }
-
-        document.getElementById('add-task-btn').addEventListener('click', () => {
-            openTaskModal();
-        });
-
-        document.getElementById('task-modal-close').addEventListener('click', () => {
-            document.getElementById('task-modal').style.display = 'none';
-        });
-
-        document.getElementById('task-cancel-btn').addEventListener('click', () => {
-            document.getElementById('task-modal').style.display = 'none';
-        });
-
-        // Task form submission
-        document.getElementById('task-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const taskId = document.getElementById('task-id').value;
-            const formData = {
-                title: document.getElementById('task-title').value,
-                description: document.getElementById('task-description').value,
-                priority: document.getElementById('task-priority').value,
-                deadline: document.getElementById('task-deadline').value,
-                duration: document.getElementById('task-duration').value
-            };
-            
-            try {
-                const url = taskId ? `/tasks/api/update` : `/tasks/api/save`;
-                const method = 'POST';
-                
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert(taskId ? 'Task đã được cập nhật!' : 'Task đã được tạo thành công!');
-                    document.getElementById('task-modal').style.display = 'none';
-                    loadTasks();
+                    document.getElementById('event-form').reset();
+                    // Refresh calendar if needed
                 } else {
                     alert('Lỗi: ' + result.message);
                 }
@@ -1254,26 +889,7 @@
                         `📅 ${item.taskTitle}\n   📆 ${item.dayOfWeek} ${item.startTime}-${item.endTime}\n   ⭐ ${item.priority}`
                     ).join('\n\n');
                     
-                    if (confirm('Gợi ý lịch thông minh (EDF + Greedy):\n\n' + message + '\n\nBạn có muốn áp dụng tất cả?')) {
-                        // Apply all suggestions
-                        for (const suggestion of suggestions) {
-                            await fetch('/schedule/api/save', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: new URLSearchParams({
-                                    description: suggestion.taskTitle,
-                                    dayOfWeek: suggestion.dayOfWeek,
-                                    startTime: suggestion.startTime,
-                                    endTime: suggestion.endTime,
-                                    color: '#16a34a'
-                                })
-                            });
-                        }
-                        alert('Đã áp dụng tất cả gợi ý!');
-                        loadEvents();
-                    }
+                    alert('Gợi ý lịch thông minh (EDF + Greedy):\n\n' + message);
                 } else {
                     alert('Lỗi: ' + result.message);
                 }
@@ -1282,27 +898,28 @@
             }
         });
 
-        // Load data functions
-        async function loadEvents() {
-            try {
-                const response = await fetch('/schedule/api/schedules');
-                const result = await response.json();
-                events = result || [];
-                renderCalendar();
-            } catch (error) {
-                console.error('Error loading events:', error);
-            }
-        }
+        // Settings toggles
+        const webNotifications = document.getElementById('web-notifications');
+        const emailNotifications = document.getElementById('email-notifications');
+        const soundNotifications = document.getElementById('sound-notifications');
 
-        async function loadTasks() {
-            try {
-                const response = await fetch('/tasks/api/list');
-                const result = await response.json();
-                tasks = result || [];
-            } catch (error) {
-                console.error('Error loading tasks:', error);
-            }
-        }
+        // Load settings from localStorage
+        webNotifications.checked = localStorage.getItem('web-notifications') !== 'false';
+        emailNotifications.checked = localStorage.getItem('email-notifications') !== 'false';
+        soundNotifications.checked = localStorage.getItem('sound-notifications') !== 'false';
+
+        // Save settings to localStorage
+        webNotifications.addEventListener('change', () => {
+            localStorage.setItem('web-notifications', webNotifications.checked);
+        });
+
+        emailNotifications.addEventListener('change', () => {
+            localStorage.setItem('email-notifications', emailNotifications.checked);
+        });
+
+        soundNotifications.addEventListener('change', () => {
+            localStorage.setItem('sound-notifications', soundNotifications.checked);
+        });
 
         // Load user info
         async function loadUserInfo() {
@@ -1313,10 +930,12 @@
                     document.getElementById('profile-name').textContent = user.username || 'User';
                     document.getElementById('profile-avatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
                     
+                    // Show admin link if user is admin
                     if (user.role === 'ADMIN') {
                         document.querySelector('.admin-link').style.display = 'block';
                     }
                 } else {
+                    // User not logged in, show auth buttons
                     document.getElementById('profile-dropdown').style.display = 'none';
                     document.getElementById('auth-buttons').style.display = 'flex';
                 }
@@ -1331,31 +950,8 @@
             // Implement search logic here
         });
 
-        // Settings toggles
-        const webNotifications = document.getElementById('web-notifications');
-        const emailNotifications = document.getElementById('email-notifications');
-        const soundNotifications = document.getElementById('sound-notifications');
-
-        webNotifications.checked = localStorage.getItem('web-notifications') !== 'false';
-        emailNotifications.checked = localStorage.getItem('email-notifications') !== 'false';
-        soundNotifications.checked = localStorage.getItem('sound-notifications') !== 'false';
-
-        webNotifications.addEventListener('change', () => {
-            localStorage.setItem('web-notifications', webNotifications.checked);
-        });
-
-        emailNotifications.addEventListener('change', () => {
-            localStorage.setItem('email-notifications', emailNotifications.checked);
-        });
-
-        soundNotifications.addEventListener('change', () => {
-            localStorage.setItem('sound-notifications', soundNotifications.checked);
-        });
-
         // Initialize
         loadUserInfo();
-        loadEvents();
-        loadTasks();
         renderCalendar();
     </script>
 </body>

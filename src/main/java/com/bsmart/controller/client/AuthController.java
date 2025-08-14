@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,10 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
@@ -34,9 +36,20 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     /**
+     * Trang chủ - redirect dựa trên trạng thái đăng nhập
+     */
+    @GetMapping("/")
+    public String home(Principal principal) {
+        if (principal != null) {
+            return "redirect:/schedule/add";
+        }
+        return "redirect:/auth/login";
+    }
+
+    /**
      * Hiển thị trang đăng nhập
      */
-    @GetMapping("/login")
+    @GetMapping("/auth/login")
     public String showLoginForm(Model model,
             @RequestParam(value = "error", required = false) String error,
             @RequestParam(value = "logout", required = false) String logout) {
@@ -56,7 +69,7 @@ public class AuthController {
     /**
      * Hiển thị trang đăng ký
      */
-    @GetMapping("/register")
+    @GetMapping("/auth/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("registrationDTO", new UserRegistrationDTO());
         return "client/auth/register";
@@ -65,7 +78,7 @@ public class AuthController {
     /**
      * Xử lý đăng ký
      */
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public String processRegistration(@Valid @ModelAttribute("registrationDTO") UserRegistrationDTO registrationDTO,
             BindingResult bindingResult,
             Model model,
@@ -90,7 +103,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("successMessage",
                     "Đăng ký thành công! Chào mừng " + user.getUsername());
 
-            return "redirect:/auth/login";
+            return "redirect:/schedule/add";
 
         } catch (RuntimeException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -102,28 +115,9 @@ public class AuthController {
     }
 
     /**
-     * Xử lý đăng nhập (POST)
-     */
-    @PostMapping("/login")
-    public String processLogin(@ModelAttribute("loginDTO") UserLoginDTO loginDTO,
-            HttpServletRequest request,
-            Model model) {
-        Optional<User> userOpt = userService.findByUsernameOrEmail(loginDTO.getUsername());
-
-        if (userOpt.isPresent() && userService.checkPassword(userOpt.get(), loginDTO.getPassword())) {
-            User user = userOpt.get();
-            request.getSession().setAttribute("currentUser", user);
-            return "redirect:/client/schedule/add"; // redirect vào lichmoi.jsp
-        } else {
-            model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng!");
-            return "client/auth/login";
-        }
-    }
-
-    /**
      * Xử lý đăng xuất
      */
-    @GetMapping("/logout")
+    @GetMapping("/auth/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response,
             RedirectAttributes redirectAttributes) {
 
@@ -139,7 +133,7 @@ public class AuthController {
     /**
      * Trang hồ sơ cá nhân
      */
-    @GetMapping("/profile")
+    @GetMapping("/auth/profile")
     public String showProfile(Model model, Principal principal) {
         if (principal != null) {
             User user = userService.getCurrentUser(principal.getName());
@@ -151,7 +145,7 @@ public class AuthController {
     /**
      * Cập nhật hồ sơ
      */
-    @PostMapping("/profile")
+    @PostMapping("/auth/profile")
     public String updateProfile(@ModelAttribute("user") User user,
             Principal principal,
             RedirectAttributes redirectAttributes) {
@@ -176,7 +170,7 @@ public class AuthController {
     /**
      * API kiểm tra username có tồn tại
      */
-    @GetMapping("/api/check-username")
+    @GetMapping("/auth/api/check-username")
     @ResponseBody
     public boolean checkUsername(@RequestParam String username) {
         return userService.existsByUsername(username);
@@ -185,9 +179,36 @@ public class AuthController {
     /**
      * API kiểm tra email có tồn tại
      */
-    @GetMapping("/api/check-email")
+    @GetMapping("/auth/api/check-email")
     @ResponseBody
     public boolean checkEmail(@RequestParam String email) {
         return userService.existsByEmail(email);
+    }
+
+    /**
+     * API lấy thông tin user hiện tại
+     */
+    @GetMapping("/auth/api/current-user")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getCurrentUser(Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (principal == null) {
+            return ResponseEntity.status(401).body(response);
+        }
+        
+        try {
+            User user = userService.getCurrentUser(principal.getName());
+            response.put("id", user.getId());
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            response.put("fullName", user.getFullName());
+            response.put("role", user.getRole().getValue());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
     }
 }
