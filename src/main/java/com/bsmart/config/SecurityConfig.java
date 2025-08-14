@@ -45,14 +45,22 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
+                                // Cho phép tất cả request tới các file static và trang auth
                                 .authorizeHttpRequests(authz -> authz
-                                                .anyRequest().permitAll() // tất cả URL đều được phép
+                                                .requestMatchers(
+                                                                "/auth/**",
+                                                                "/client/css/**",
+                                                                "/client/js/**",
+                                                                "/client/image/**",
+                                                                "/resources/**")
+                                                .permitAll()
+                                                .anyRequest().permitAll() // tất cả request khác cũng được
                                 )
-                                .formLogin(form -> form
-                                                .loginPage("/auth/login") // hiển thị form login
-                                                .permitAll())
-                                .csrf(csrf -> csrf.disable()); // tạm thời tắt CSRF để test
+                                .csrf(csrf -> csrf.disable()); // tạm thời tắt CSRF để form login custom hoạt động
+
+                // Không dùng Spring Security form login
+                http.formLogin().disable();
+
                 return http.build();
         }
-
 }

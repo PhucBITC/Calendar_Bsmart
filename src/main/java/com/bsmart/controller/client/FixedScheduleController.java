@@ -35,7 +35,7 @@ public class FixedScheduleController {
         System.out.println("Day of Week: " + schedule.getDayOfWeek());
         System.out.println("Start Time: " + schedule.getStartTime());
         System.out.println("End Time: " + schedule.getEndTime());
-        
+
         FixedSchedule savedSchedule = fixedScheduleService.saveSchedule(schedule);
         return "redirect:/schedule/list";
     }
@@ -51,20 +51,20 @@ public class FixedScheduleController {
             System.out.println("Day of Week: " + schedule.getDayOfWeek());
             System.out.println("Start Time: " + schedule.getStartTime());
             System.out.println("End Time: " + schedule.getEndTime());
-            
+
             FixedSchedule savedSchedule = fixedScheduleService.saveSchedule(schedule);
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Schedule saved successfully");
             response.put("data", savedSchedule);
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Error saving schedule: " + e.getMessage());
-            
+
             return ResponseEntity.badRequest().body(response);
         }
     }
@@ -89,17 +89,17 @@ public class FixedScheduleController {
     public ResponseEntity<Map<String, Object>> deleteApi(@PathVariable Long id) {
         try {
             fixedScheduleService.deleteSchedule(id);
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Schedule deleted successfully");
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Error deleting schedule: " + e.getMessage());
-            
+
             return ResponseEntity.badRequest().body(response);
         }
     }

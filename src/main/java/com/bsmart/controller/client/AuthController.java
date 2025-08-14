@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
@@ -104,27 +105,16 @@ public class AuthController {
      * Xử lý đăng nhập (POST)
      */
     @PostMapping("/login")
-    public String processLogin(@Valid @ModelAttribute("loginDTO") UserLoginDTO loginDTO,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processLogin(@ModelAttribute("loginDTO") UserLoginDTO loginDTO,
+            HttpServletRequest request,
+            Model model) {
+        Optional<User> userOpt = userService.findByUsernameOrEmail(loginDTO.getUsername());
 
-        if (bindingResult.hasErrors()) {
-            return "client/auth/login";
-        }
-
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginDTO.getUsername(),
-                            loginDTO.getPassword()));
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            redirectAttributes.addFlashAttribute("successMessage", "Đăng nhập thành công!");
-            return "redirect:/client/task/list";
-
-        } catch (AuthenticationException e) {
+        if (userOpt.isPresent() && userService.checkPassword(userOpt.get(), loginDTO.getPassword())) {
+            User user = userOpt.get();
+            request.getSession().setAttribute("currentUser", user);
+            return "redirect:/client/schedule/add"; // redirect vào lichmoi.jsp
+        } else {
             model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng!");
             return "client/auth/login";
         }
