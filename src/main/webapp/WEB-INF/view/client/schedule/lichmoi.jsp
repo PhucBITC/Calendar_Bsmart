@@ -195,7 +195,7 @@
 
                         <div class="dialog__content">
                             <div class="form__fields">
-                                <input type="hidden" id="id" name="id" />
+                                <input type="hidden" id="id" name="id" value="${schedule.id}"/>
 
                                 <div class="form__field">
                                     <label class="form__label" for="title">Title</label>
