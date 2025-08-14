@@ -21,6 +21,9 @@ public class Task {
     private LocalDate deadline;
 
     private LocalDate createdAt = LocalDate.now(); // mặc định ngày tạo
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // ====== GET/SET ======
 

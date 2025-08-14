@@ -23,6 +23,9 @@ public class FixedSchedule {
     private LocalTime endTime;
 
     private String color;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user; // <<< Tên field phải trùng với mappedBy trong User
 
     // Ví dụ: "Lập trình Java", "Sinh hoạt CLB"
 
