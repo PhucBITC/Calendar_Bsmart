@@ -12,7 +12,8 @@
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
                 <style>
                     body {
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        background: linear-gradient(135deg, #0a9b7700 0%, #46ebaf 100%);
+
                         min-height: 100vh;
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     }
@@ -35,7 +36,7 @@
                     }
 
                     .login-header {
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        background: linear-gradient(135deg, #7eb9aa 0%, #59e2b0 100%);
                         color: white;
                         padding: 40px 30px 30px;
                         text-align: center;
@@ -76,12 +77,12 @@
                     }
 
                     .form-control:focus {
-                        border-color: #667eea;
-                        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                        border-color: #7eb9aa;
+                        box-shadow: 0 0 0 0.2rem rgba(126, 185, 170, 0.25);
                     }
 
                     .btn-login {
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        background: linear-gradient(135deg, #7eb9aa 0%, #59e2b0 100%);
                         border: none;
                         border-radius: 10px;
                         padding: 12px;
@@ -109,7 +110,7 @@
                     }
 
                     .login-footer a {
-                        color: #667eea;
+                        color: #0f6852;
                         text-decoration: none;
                         font-weight: 600;
                     }
@@ -132,7 +133,7 @@
 
                     .input-group:focus-within .input-group-text,
                     .input-group:focus-within .form-control {
-                        border-color: #667eea;
+                        border-color: #7eb9aa;
                     }
 
                     .remember-me {
@@ -143,8 +144,8 @@
                     }
 
                     .form-check-input:checked {
-                        background-color: #667eea;
-                        border-color: #667eea;
+                        background-color: #7eb9aa;
+                        border-color: #7eb9aa;
                     }
                 </style>
             </head>
@@ -181,9 +182,6 @@
                             <form:form method="post" action="${pageContext.request.contextPath}/auth/login"
                                 modelAttribute="loginDTO">
                                 <div class="form-group">
-                                    <label class="form-label" for="username">
-                                        <i class="fas fa-user me-2"></i>Tên đăng nhập hoặc Email
-                                    </label>
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <i class="fas fa-user text-muted"></i>
@@ -196,9 +194,6 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="password">
-                                        <i class="fas fa-lock me-2"></i>Mật khẩu
-                                    </label>
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <i class="fas fa-lock text-muted"></i>

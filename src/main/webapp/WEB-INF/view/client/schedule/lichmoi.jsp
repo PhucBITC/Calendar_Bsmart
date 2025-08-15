@@ -42,21 +42,14 @@
             <div class="app">
                 <div class="sidebar desktop-only">
                     <div class="sidebar__logo">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-calendar">
-                            <path d="M8 2v4" />
-                            <path d="M16 2v4" />
-                            <rect width="18" height="18" x="3" y="4" rx="2" />
-                            <path d="M3 10h18" />
-                        </svg>
-                        <span class="sidebar__title">Vanilla Calendar</span>
+                        <img style="width: 50px;" src="/client/image/logo.png" alt="B-Smart Calendar Logo">
+                        <span class="sidebar__title">B-Smart Calendar</span>
                     </div>
 
                     <button class="button button--primary button--lg" data-event-create-button>Create event</button>
 
                     <button class="button button--secondary button--lg" data-smart-schedule-button
-                        style="margin-top: 1rem;">
+                        style="margin-top: 1rem;display: flex;gap: 5px;align-items: center;justify-content: center;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="button__icon">
@@ -165,6 +158,24 @@
                             </div>
                             <time class="nav__date" data-nav-date></time>
                         </div>
+                        <div class="nav__user">
+                            <div class="user-menu" id="userMenu">
+                                <button class="user-menu__button" id="userMenuButton">
+                                    <img src="/client/image/user-logo.jpg" alt="User" class="user-menu__avatar" />
+                                    <span class="user-menu__name">${sessionScope.currentUser.fullName}</span>
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 6l4 4 4-4" />
+                                    </svg>
+                                </button>
+                                <div class="user-menu__dropdown" id="userMenuDropdown" style="display: none;">
+                                    <a href="/profile" class="user-menu__item">Xem hồ sơ</a>
+                                    <c:if test="${sessionScope.currentUser.role == 'ADMIN'}">
+                                        <a href="/admin" class="user-menu__item">Quản lý hệ thống</a>
+                                    </c:if>
+                                    <a href="/auth/logout" class="user-menu__item">Đăng xuất</a>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="select desktop-only">
                             <select class="select__select" data-view-select>
@@ -179,20 +190,42 @@
                                 <path d="m6 9 6 6 6-6" />
                             </svg>
                         </div>
+
+
                     </div>
                     <div class="calendar" data-calendar>
                     </div>
                 </main>
             </div>
 
-            <button class="fab mobile-only" data-event-create-button>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="fab__icon">
-                    <path d="M5 12h14" />
-                    <path d="M12 5v14" />
-                </svg>
-            </button>
+            <div class="fab-menu mobile-only" id="fabMenu">
+                <button class="fab" id="fabMainBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="fab__icon">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
+                    </svg>
+                </button>
+                <div class="fab-menu__options" id="fabMenuOptions" style="display: none;">
+                    <button class="fab-menu__option" data-event-create-button>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14" />
+                            <path d="M12 5v14" />
+                        </svg>
+                        Tạo lịch cố định
+                    </button>
+                    <button class="fab-menu__option" data-smart-schedule-button>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                        </svg>
+                        Sinh lịch tự động
+                    </button>
+                </div>
+            </div>
 
             <dialog class="dialog" data-dialog="event-form">
                 <form class="form" data-event-form action="/schedule/save" method="post">
@@ -728,8 +761,8 @@
             <template data-template="event">
                 <button class="event" data-event>
                     <span class="event__color"></span>
-                    <span class="event__title" data-event-title></span>
-                    <span class="event__time">
+                    <span class="event__title" data-event-title style="font-size: 13px;"></span>
+                    <span class="event__time" style="font-size: 13px;">
                         <time data-event-start-time></time> - <time data-event-end-time></time>
                     </span>
                 </button>
@@ -740,6 +773,45 @@
                     <button class="mini-calendar__day button button--sm" data-mini-calendar-day></button>
                 </li>
             </template>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const btn = document.getElementById('userMenuButton');
+                    const dropdown = document.getElementById('userMenuDropdown');
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                    });
+                    document.addEventListener('click', function () {
+                        dropdown.style.display = 'none';
+                    });
+
+                    // FAB menu logic
+                    const fabMainBtn = document.getElementById('fabMainBtn');
+                    const fabMenuOptions = document.getElementById('fabMenuOptions');
+                    if (fabMainBtn && fabMenuOptions) {
+                        fabMainBtn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            fabMenuOptions.style.display = fabMenuOptions.style.display === 'block' ? 'none' : 'block';
+                        });
+                        document.addEventListener('click', function () {
+                            fabMenuOptions.style.display = 'none';
+                        });
+                    }
+
+                    // Đảm bảo tất cả nút có data-smart-schedule-button đều mở dialog
+                    document.querySelectorAll('[data-smart-schedule-button]').forEach(function (btn) {
+                        btn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            const dialog = document.querySelector('dialog[data-dialog="smart-schedule"]');
+                            if (dialog) dialog.showModal();
+                            // Ẩn menu fab nếu đang mở
+                            const fabMenuOptions = document.getElementById('fabMenuOptions');
+                            if (fabMenuOptions) fabMenuOptions.style.display = 'none';
+                        });
+                    });
+                });
+            </script>
         </body>
 
         </html>
