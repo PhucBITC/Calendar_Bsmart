@@ -16,18 +16,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotBlank(message = "Tên người dùng không được để trống")
-    @Size(min = 3, max = 50, message = "Tên người dùng phải từ 3-50 ký tự")
+    @NotBlank(message = "Username cannot be empty")
+    @Size(min = 3, max = 50, message = "Username must be between 3-50 characters")
     @Column(unique = true, nullable = false)
     private String username;
     
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không đúng định dạng")
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Invalid email format")
     @Column(unique = true, nullable = false)
     private String email;
     
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     @Column(nullable = false)
     private String password;
     
@@ -37,12 +37,43 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
     
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+    
+    @Column(name = "bio", length = 500)
+    private String bio;
+    
+    @Column(name = "timezone", length = 50)
+    private String timezone = "UTC";
+    
+    @Column(name = "language", length = 10)
+    private String language = "en";
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "theme", nullable = false)
+    private Theme theme = Theme.LIGHT;
+    
+    @Column(name = "notification_enabled")
+    private boolean notificationEnabled = true;
+    
+    @Column(name = "email_notification_enabled")
+    private boolean emailNotificationEnabled = true;
+    
+    @Column(name = "sound_notification_enabled")
+    private boolean soundNotificationEnabled = true;
+    
+    @Column(name = "notification_advance_minutes")
+    private Integer notificationAdvanceMinutes = 10;
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role = UserRole.USER;
     
     @Column(name = "is_active")
     private boolean isActive = true;
+    
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -58,6 +89,10 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FixedSchedule> fixedSchedules;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Notification> notifications;
     
     @PrePersist
     protected void onCreate() {
@@ -128,6 +163,78 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
     
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+    
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+    
+    public String getBio() {
+        return bio;
+    }
+    
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+    
+    public String getTimezone() {
+        return timezone;
+    }
+    
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+    
+    public String getLanguage() {
+        return language;
+    }
+    
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+    
+    public Theme getTheme() {
+        return theme;
+    }
+    
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+    }
+    
+    public boolean isNotificationEnabled() {
+        return notificationEnabled;
+    }
+    
+    public void setNotificationEnabled(boolean notificationEnabled) {
+        this.notificationEnabled = notificationEnabled;
+    }
+    
+    public boolean isEmailNotificationEnabled() {
+        return emailNotificationEnabled;
+    }
+    
+    public void setEmailNotificationEnabled(boolean emailNotificationEnabled) {
+        this.emailNotificationEnabled = emailNotificationEnabled;
+    }
+    
+    public boolean isSoundNotificationEnabled() {
+        return soundNotificationEnabled;
+    }
+    
+    public void setSoundNotificationEnabled(boolean soundNotificationEnabled) {
+        this.soundNotificationEnabled = soundNotificationEnabled;
+    }
+    
+    public Integer getNotificationAdvanceMinutes() {
+        return notificationAdvanceMinutes;
+    }
+    
+    public void setNotificationAdvanceMinutes(Integer notificationAdvanceMinutes) {
+        this.notificationAdvanceMinutes = notificationAdvanceMinutes;
+    }
+    
     public UserRole getRole() {
         return role;
     }
@@ -142,6 +249,14 @@ public class User {
     
     public void setActive(boolean active) {
         isActive = active;
+    }
+    
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+    
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
     }
     
     public LocalDateTime getCreatedAt() {
@@ -174,5 +289,13 @@ public class User {
     
     public void setFixedSchedules(List<FixedSchedule> fixedSchedules) {
         this.fixedSchedules = fixedSchedules;
+    }
+    
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+    
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
