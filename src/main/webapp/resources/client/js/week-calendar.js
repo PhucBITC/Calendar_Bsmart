@@ -1,5 +1,12 @@
 import { generateWeekDays, isTheSameDay, today } from "./date.js";
-import { isEventAllDay, eventStartsBefore, eventEndsBefore, initDynamicEvent, eventCollidesWith, adjustDynamicEventMaxLines } from "./event.js";
+import { 
+  isEventAllDay, 
+  eventStartsBefore, 
+  eventEndsBefore, 
+  initDynamicEvent, 
+  eventCollidesWith, 
+  adjustDynamicEventMaxLines 
+} from "./event.js";
 import { initEventList } from "./event-list.js";
 
 const calendarTemplateElement = document.querySelector("[data-template='week-calendar']");
@@ -10,6 +17,39 @@ const calendarColumnTemplateElement = document.querySelector("[data-template='we
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   weekday: 'short'
 });
+
+// Helper function to convert time to minutes
+function timeStringToMinutes(time) {
+  if (typeof time === "number") {
+    return time; // Already in minutes
+  }
+  
+  if (typeof time === "string") {
+    // Handle "4:24 PM" format
+    if (time.includes("AM") || time.includes("PM")) {
+      const [timePart, period] = time.split(" ");
+      const [hours, minutes] = timePart.split(":").map(Number);
+      let hour24 = hours;
+      
+      if (period === "PM" && hours !== 12) {
+        hour24 += 12;
+      } else if (period === "AM" && hours === 12) {
+        hour24 = 0;
+      }
+      
+      return hour24 * 60 + minutes;
+    }
+    
+    // Handle "16:24" format
+    if (time.includes(":")) {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 60 + minutes;
+    }
+  }
+  
+  console.warn("Invalid time format:", time);
+  return 0;
+}
 
 export function initWeekCalendar(parent, selectedDate, eventStore, isSingleDay, deviceType) {
   const calendarContent = calendarTemplateElement.content.cloneNode(true);
@@ -132,6 +172,9 @@ function initColumn(parent, weekDay, events) {
 }
 
 function calculateEventsDynamicStyles(events) {
+  console.log("=== CALCULATING EVENT POSITIONS ===");
+  console.log("Total events:", events.length);
+  
   const { eventGroups, totalColumns } = groupEvents(events);
   const columnWidth = 100 / totalColumns;
   const initialEventGroupItems = [];
@@ -143,12 +186,31 @@ function calculateEventsDynamicStyles(events) {
       }
     }
   }
-
-  return initialEventGroupItems.map((eventGroupItem) => {
-    const topPercentage = 100 * (eventGroupItem.event.startTime / 1440);
-    const bottomPercentage = 100 - 100 * (eventGroupItem.event.endTime / 1440);
+  
+  return initialEventGroupItems.map((eventGroupItem, index) => {
+    console.log(`--- Event ${index + 1} ---`);
+    console.log("Event title:", eventGroupItem.event.title);
+    console.log("Original start time:", eventGroupItem.event.startTime);
+    console.log("Original end time:", eventGroupItem.event.endTime);
+    
+    // Convert time to minutes
+    const startTimeInMinutes = timeStringToMinutes(eventGroupItem.event.startTime);
+    const endTimeInMinutes = timeStringToMinutes(eventGroupItem.event.endTime);
+    
+    console.log("Start time in minutes:", startTimeInMinutes);
+    console.log("End time in minutes:", endTimeInMinutes);
+    
+    // Calculate percentages based on 24-hour day (0-1440 minutes)
+    const topPercentage = 100 * (startTimeInMinutes / 1440);
+    const bottomPercentage = 100 - 100 * (endTimeInMinutes / 1440);
     const leftPercentage = columnWidth * eventGroupItem.columnIndex;
     const rightPercentage = columnWidth * (totalColumns - eventGroupItem.columnIndex - eventGroupItem.columnSpan);
+
+    console.log("Calculated top:", topPercentage.toFixed(2) + "%");
+    console.log("Calculated bottom:", bottomPercentage.toFixed(2) + "%");
+    console.log("Calculated left:", leftPercentage.toFixed(2) + "%");
+    console.log("Calculated right:", rightPercentage.toFixed(2) + "%");
+    console.log("Column info - Index:", eventGroupItem.columnIndex, "Span:", eventGroupItem.columnSpan, "Total:", totalColumns);
 
     return {
       event: eventGroupItem.event,

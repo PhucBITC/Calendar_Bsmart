@@ -64,15 +64,33 @@ export function isEventAllDay(event) {
   return startTimeMinutes === 0 && endTimeMinutes === 1440;
 }
 
-// Helper function to convert time string to minutes
-function timeStringToMinutes(time) {
+// EXPORTED: Helper function to convert time to minutes
+export function timeStringToMinutes(time) {
   if (typeof time === "number") {
     return time; // Already in minutes
   }
   
-  if (typeof time === "string" && time.includes(":")) {
-    const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
+  if (typeof time === "string") {
+    // Handle "4:24 PM" format
+    if (time.includes("AM") || time.includes("PM")) {
+      const [timePart, period] = time.split(" ");
+      const [hours, minutes] = timePart.split(":").map(Number);
+      let hour24 = hours;
+      
+      if (period === "PM" && hours !== 12) {
+        hour24 += 12;
+      } else if (period === "AM" && hours === 12) {
+        hour24 = 0;
+      }
+      
+      return hour24 * 60 + minutes;
+    }
+    
+    // Handle "16:24" format
+    if (time.includes(":")) {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 60 + minutes;
+    }
   }
   
   // Fallback to 0 if invalid format
@@ -106,10 +124,27 @@ export function eventCollidesWith(eventA, eventB) {
 
 export function eventTimeToDate(event, eventTime) {
   let hours = 0, minutes = 0;
-  if (typeof eventTime === "string" && eventTime.includes(":")) {
-    const [h, m] = eventTime.split(":");
-    hours = parseInt(h, 10);
-    minutes = parseInt(m, 10);
+  
+  if (typeof eventTime === "string") {
+    // Handle "4:24 PM" format
+    if (eventTime.includes("AM") || eventTime.includes("PM")) {
+      const [timePart, period] = eventTime.split(" ");
+      const [h, m] = timePart.split(":");
+      hours = parseInt(h, 10);
+      minutes = parseInt(m, 10);
+      
+      if (period === "PM" && hours !== 12) {
+        hours += 12;
+      } else if (period === "AM" && hours === 12) {
+        hours = 0;
+      }
+    } 
+    // Handle "16:24" format
+    else if (eventTime.includes(":")) {
+      const [h, m] = eventTime.split(":");
+      hours = parseInt(h, 10);
+      minutes = parseInt(m, 10);
+    }
   } else if (typeof eventTime === "number") {
     hours = Math.floor(eventTime / 60);
     minutes = eventTime % 60;
@@ -124,10 +159,11 @@ export function eventTimeToDate(event, eventTime) {
   );
 }
 
-
-
 export function validateEvent(event) {
-  if (event.startTime >= event.endTime) {
+  const startTimeMinutes = timeStringToMinutes(event.startTime);
+  const endTimeMinutes = timeStringToMinutes(event.endTime);
+  
+  if (startTimeMinutes >= endTimeMinutes) {
     return "Event end time must be after start time";
   }
 
@@ -145,4 +181,16 @@ export function adjustDynamicEventMaxLines(dynamicEventElement) {
 
 export function generateEventId() {
   return Date.now();
+}
+
+// Helper function for pixel-based positioning (alternative approach)
+function getEventTop(startTime) {
+  const startMinutes = timeStringToMinutes(startTime);
+  const hourHeight = 60; // px per hour
+  return (startMinutes / 60) * hourHeight;
+}
+
+export function renderEvent(parent, event) {
+  const top = getEventTop(event.startTime) + "px";
+  initDynamicEvent(parent, event, { top, left: "0", right: "0", bottom: "unset" });
 }
