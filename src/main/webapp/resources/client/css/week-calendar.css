@@ -119,12 +119,105 @@
 
 .week-calendar__column {
   position: relative;
+  flex: 1;
+  border-right: 1px solid var(--color-gray-200);
+}
+
+.week-calendar__column:last-child {
+  border-right: none;
 }
 
 .week-calendar__cell {
-  height: 4rem;
-  border-top: 1px solid var(--color-gray-300);
-  border-left: 1px solid var(--color-gray-300);
+  height: 60px;
+  border-bottom: 1px solid var(--color-gray-100);
+  cursor: pointer;
+  transition: background-color var(--duration-sm) ease-out;
+}
+
+.week-calendar__cell:hover {
+  background-color: var(--color-gray-50);
+}
+
+.week-calendar__cell:last-child {
+  border-bottom: none;
+}
+
+/* Current Time Indicator Styles */
+.current-time-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ea4335;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(234, 67, 53, 0.3);
+}
+
+.current-time-label {
+  position: absolute;
+  background-color: #ea4335;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 1001;
+  pointer-events: none;
+  transform: translateY(-50%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation for current time indicator */
+@keyframes currentTimePulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.current-time-indicator {
+  animation: currentTimePulse 2s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .current-time-label {
+    font-size: 10px;
+    padding: 1px 4px;
+    left: -50px;
+  }
+  
+  .current-time-indicator {
+    height: 1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .current-time-label {
+    display: none; /* Hide label on very small screens */
+  }
+  
+  .current-time-indicator {
+    height: 1px;
+    background-color: #ea4335;
+  }
+}
+
+/* Ensure calendar columns container has proper positioning */
+[data-week-calendar-columns] {
+  position: relative !important;
+}
+
+/* Make sure the indicator appears above events */
+.current-time-indicator,
+.current-time-label {
+  z-index: 1000 !important;
 }
 
 @media (min-width: 768px) {

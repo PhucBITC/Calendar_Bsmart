@@ -510,10 +510,26 @@
                             <div class="form__field">
                                 <label class="form__label">Khung giờ rảnh trong ngày</label>
                                 <div class="form__split">
+
                                     <div class="form__field">
                                         <label class="form__label" for="start-hour">Giờ bắt đầu</label>
                                         <input class="input input--fill" id="start-hour" name="startHour" type="time" value="08:00" required />
                                     </div>
+
+                            <!-- Thuật toán sử dụng -->
+                            <div class="form__field">
+                                <label class="form__label">Thuật toán sắp xếp</label>
+                                <div style="margin-top: 0.5rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <input type="checkbox" name="useEDF" />
+                                        <span>EDF (Earliest Deadline First)</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="checkbox" name="useGreedy" />
+                                        <span>Greedy (Ưu tiên cao)</span>
+                                    </label>
+                                </div>
+                            </div>
                                     <div class="form__field">
                                         <label class="form__label" for="end-hour">Giờ kết thúc</label>
                                         <input class="input input--fill" id="end-hour" name="endHour" type="time" value="17:00" required />

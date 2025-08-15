@@ -140,12 +140,12 @@ public class FixedScheduleController {
                 scheduleData.put("endTime", savedSchedule.getEndTime() != null ? savedSchedule.getEndTime().toString() : null);
                 scheduleData.put("color", savedSchedule.getColor());
 
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", true);
-                response.put("message", "Schedule saved successfully");
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Schedule saved successfully");
                 response.put("data", scheduleData);
 
-                return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
             }
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
@@ -387,7 +387,7 @@ public class FixedScheduleController {
         return suggestions;
     }
     
-    // Thuật toán sinh lịch tự động dựa trên task mới
+    // Thuật toán sinh lịch tự động dựa trên task mới - PHIÊN BẢN MỚI
     private List<Map<String, Object>> generateTaskBasedSchedule(
             Task task, Integer repeatCount, String startHour, String endHour, 
             Integer breakTime, Boolean useEDF, Boolean useGreedy) {
@@ -397,83 +397,232 @@ public class FixedScheduleController {
         // Chuyển đổi thời gian làm việc thành phút
         int workStartMinutes = timeToMinutes(startHour);
         int workEndMinutes = timeToMinutes(endHour);
-        int availableMinutes = workEndMinutes - workStartMinutes;
-        
-        // Tính toán thời gian cho task
         int taskDuration = task.getEstimatedDuration() != null ? task.getEstimatedDuration() : 60;
         
-        // Kiểm tra xem có đủ thời gian không
-        if (taskDuration > availableMinutes) {
-            // Nếu task quá dài, chia nhỏ thành nhiều phần
-            int parts = (int) Math.ceil((double) taskDuration / availableMinutes);
-            taskDuration = availableMinutes;
+        // Lấy danh sách lịch cố định của user
+        User currentUser = task.getUser();
+        List<FixedSchedule> existingSchedules = fixedScheduleService.getSchedulesByUser(currentUser);
+        
+        // Ngày bắt đầu (hôm nay)
+        LocalDate startDate = LocalDate.now();
+        LocalDate deadline = task.getDeadline();
+        
+        // Giờ hiện tại (để kiểm tra slot trong ngày hôm nay)
+        LocalTime currentTime = LocalTime.now();
+        int currentMinutes = currentTime.getHour() * 60 + currentTime.getMinute();
+        
+        // Tính toán độ ưu tiên dựa trên thuật toán
+        int priority = calculateTaskPriority(task, useEDF, useGreedy);
+        
+        int createdCount = 0;
+        LocalDate currentDate = startDate;
+        
+        while (createdCount < repeatCount && !currentDate.isAfter(deadline)) {
+            // Kiểm tra xem có thể tạo slot trong ngày này không
+            Map<String, Object> slot = findAvailableSlot(
+                currentDate, task, taskDuration, workStartMinutes, workEndMinutes, 
+                breakTime, existingSchedules, currentMinutes, useEDF, useGreedy
+            );
             
-            for (int i = 0; i < parts && i < repeatCount; i++) {
-                Map<String, Object> suggestion = createScheduleSuggestion(task, i, taskDuration, workStartMinutes, workEndMinutes, useEDF, useGreedy);
-                suggestions.add(suggestion);
+            if (slot != null) {
+                // Thêm thông tin về độ ưu tiên vào slot
+                slot.put("priorityScore", priority);
+                suggestions.add(slot);
+                createdCount++;
+                
+                // Cập nhật danh sách lịch cố định để tránh trùng lặp
+                addToExistingSchedules(existingSchedules, slot);
             }
-        } else {
-            // Task vừa với thời gian có sẵn
-            for (int i = 0; i < repeatCount; i++) {
-                Map<String, Object> suggestion = createScheduleSuggestion(task, i, taskDuration, workStartMinutes, workEndMinutes, useEDF, useGreedy);
-                suggestions.add(suggestion);
-            }
+            
+            // Chuyển sang ngày tiếp theo
+            currentDate = currentDate.plusDays(1);
         }
+        
+        // Sắp xếp kết quả theo ngày và giờ
+        suggestions.sort((a, b) -> {
+            LocalDate dateA = LocalDate.parse((String) a.get("dayOfWeek"));
+            LocalDate dateB = LocalDate.parse((String) b.get("dayOfWeek"));
+            
+            if (!dateA.equals(dateB)) {
+                return dateA.compareTo(dateB);
+            }
+            
+            // Nếu cùng ngày, sắp xếp theo giờ bắt đầu
+            String timeA = (String) a.get("startTime");
+            String timeB = (String) b.get("startTime");
+            return timeA.compareTo(timeB);
+        });
         
         return suggestions;
     }
     
-    // Tạo suggestion cho một lần lặp
-    private Map<String, Object> createScheduleSuggestion(Task task, int iteration, int duration, int workStart, int workEnd, Boolean useEDF, Boolean useGreedy) {
-        Map<String, Object> suggestion = new HashMap<>();
+    // Tính toán độ ưu tiên của task dựa trên thuật toán
+    private int calculateTaskPriority(Task task, Boolean useEDF, Boolean useGreedy) {
+        int priority = 0;
         
-        // Tính thời gian bắt đầu dựa trên thuật toán
-        int startTime = calculateOptimalStartTime(task, iteration, duration, workStart, workEnd, useEDF, useGreedy);
+        if (useEDF) {
+            // EDF: Deadline càng gần thì ưu tiên càng cao
+            LocalDate today = LocalDate.now();
+            long daysToDeadline = java.time.temporal.ChronoUnit.DAYS.between(today, task.getDeadline());
+            priority += (int) (1000 - daysToDeadline); // Deadline gần = điểm cao
+        }
+        
+        if (useGreedy) {
+            // Greedy: Priority càng cao thì ưu tiên càng cao
+            switch (task.getPriority()) {
+                case HIGH:
+                    priority += 100;
+                    break;
+                case MEDIUM:
+                    priority += 50;
+                    break;
+                case LOW:
+                    priority += 10;
+                    break;
+            }
+        }
+        
+        return priority;
+    }
+    
+    // Tìm slot trống phù hợp trong một ngày
+    private Map<String, Object> findAvailableSlot(
+            LocalDate date, Task task, int taskDuration, int workStartMinutes, 
+            int workEndMinutes, int breakTime, List<FixedSchedule> existingSchedules,
+            int currentMinutes, Boolean useEDF, Boolean useGreedy) {
+        
+        // Lấy tất cả lịch cố định trong ngày này
+        List<TimeSlot> busySlots = getBusySlotsForDate(date, existingSchedules);
+        
+        // Tạo danh sách các khoảng thời gian trống
+        List<TimeSlot> freeSlots = findFreeSlots(workStartMinutes, workEndMinutes, busySlots);
+        
+        // Tính tổng thời gian rảnh trong ngày
+        int totalFreeTime = 0;
+        for (TimeSlot freeSlot : freeSlots) {
+            totalFreeTime += freeSlot.endMinutes - freeSlot.startMinutes;
+        }
+        
+        // Kiểm tra xem có đủ thời gian cho task không
+        if (totalFreeTime < taskDuration) {
+            System.out.println("Warning: Task '" + task.getTitle() + "' requires " + taskDuration + 
+                             " minutes but only " + totalFreeTime + " minutes available on " + date);
+            return null; // Không đủ thời gian
+        }
+        
+        // Kiểm tra xem có đủ thời gian cho task không (bao gồm breakTime)
+        for (TimeSlot freeSlot : freeSlots) {
+            int availableDuration = freeSlot.endMinutes - freeSlot.startMinutes;
+            int requiredDuration = taskDuration + breakTime; // Thêm breakTime
+            
+            // Nếu slot trống đủ lớn cho task + breakTime
+            if (availableDuration >= requiredDuration) {
+                // Kiểm tra xem có phải ngày hôm nay và giờ bắt đầu < giờ hiện tại không
+                if (date.equals(LocalDate.now()) && freeSlot.startMinutes < currentMinutes) {
+                    continue; // Bỏ qua slot này
+                }
+                
+                // Tạo slot cho task (không bao gồm breakTime trong slot)
+                return createScheduleSuggestion(
+                    task, date, freeSlot.startMinutes, freeSlot.startMinutes + taskDuration, 
+                    useEDF, useGreedy
+                );
+            }
+        }
+        
+        return null; // Không tìm thấy slot phù hợp
+    }
+    
+    // Lấy danh sách các slot bận trong một ngày
+    private List<TimeSlot> getBusySlotsForDate(LocalDate date, List<FixedSchedule> existingSchedules) {
+        List<TimeSlot> busySlots = new ArrayList<>();
+        
+        for (FixedSchedule schedule : existingSchedules) {
+            if (schedule.getDayOfWeek().equals(date.toString())) {
+                int startMinutes = timeToMinutes(schedule.getStartTime().toString());
+                int endMinutes = timeToMinutes(schedule.getEndTime().toString());
+                busySlots.add(new TimeSlot(startMinutes, endMinutes));
+            }
+        }
+        
+        // Sắp xếp theo thời gian bắt đầu
+        busySlots.sort((a, b) -> Integer.compare(a.startMinutes, b.startMinutes));
+        
+        return busySlots;
+    }
+    
+    // Tìm các khoảng thời gian trống
+    private List<TimeSlot> findFreeSlots(int workStartMinutes, int workEndMinutes, List<TimeSlot> busySlots) {
+        List<TimeSlot> freeSlots = new ArrayList<>();
+        
+        int currentTime = workStartMinutes;
+        
+        for (TimeSlot busySlot : busySlots) {
+            // Nếu có khoảng trống trước slot bận
+            if (currentTime < busySlot.startMinutes) {
+                freeSlots.add(new TimeSlot(currentTime, busySlot.startMinutes));
+            }
+            
+            // Cập nhật thời gian hiện tại (đảm bảo không có overlap)
+            currentTime = Math.max(currentTime, busySlot.endMinutes);
+        }
+        
+        // Kiểm tra khoảng trống cuối ngày
+        if (currentTime < workEndMinutes) {
+            freeSlots.add(new TimeSlot(currentTime, workEndMinutes));
+        }
+        
+        // Sắp xếp theo thời gian bắt đầu để đảm bảo thứ tự tuần tự
+        freeSlots.sort((a, b) -> Integer.compare(a.startMinutes, b.startMinutes));
+        
+        return freeSlots;
+    }
+    
+    // Thêm slot mới vào danh sách lịch cố định (để tránh trùng lặp)
+    private void addToExistingSchedules(List<FixedSchedule> existingSchedules, Map<String, Object> newSlot) {
+        // Tạo một FixedSchedule giả để đại diện cho slot mới
+        FixedSchedule tempSchedule = new FixedSchedule();
+        tempSchedule.setDayOfWeek((String) newSlot.get("dayOfWeek"));
+        tempSchedule.setStartTime(LocalTime.parse((String) newSlot.get("startTime")));
+        tempSchedule.setEndTime(LocalTime.parse((String) newSlot.get("endTime")));
+        
+        // Thêm vào danh sách (chỉ để tính toán, không lưu vào DB)
+        existingSchedules.add(tempSchedule);
+        
+        // Cũng thêm breakTime slot để tránh task tiếp theo đặt vào khoảng thời gian này
+        // (breakTime sẽ được xử lý trong findAvailableSlot)
+    }
+    
+    // Tạo suggestion cho một slot
+    private Map<String, Object> createScheduleSuggestion(
+            Task task, LocalDate date, int startMinutes, int endMinutes, 
+            Boolean useEDF, Boolean useGreedy) {
+        
+        Map<String, Object> suggestion = new HashMap<>();
         
         suggestion.put("taskTitle", task.getTitle());
         suggestion.put("taskDescription", task.getDescription());
-        suggestion.put("dayOfWeek", calculateOptimalDate(task, iteration));
-        suggestion.put("startTime", minutesToTime(startTime));
-        suggestion.put("endTime", minutesToTime(startTime + duration));
+        suggestion.put("dayOfWeek", date.toString());
+        suggestion.put("startTime", minutesToTime(startMinutes));
+        suggestion.put("endTime", minutesToTime(endMinutes));
         suggestion.put("priority", task.getPriority().name());
         suggestion.put("deadline", task.getDeadline().toString());
-        suggestion.put("estimatedDuration", duration);
+        suggestion.put("estimatedDuration", endMinutes - startMinutes);
         suggestion.put("algorithm", useEDF && useGreedy ? "EDF + Greedy" : 
                      useEDF ? "EDF" : useGreedy ? "Greedy" : "Default");
         
         return suggestion;
     }
     
-    // Tính thời gian bắt đầu tối ưu
-    private int calculateOptimalStartTime(Task task, int iteration, int duration, int workStart, int workEnd, Boolean useEDF, Boolean useGreedy) {
-        // Logic đơn giản: phân bổ đều trong ngày
-        int availableTime = workEnd - workStart;
-        int startTime = workStart + (iteration * (availableTime / 3)); // Chia thành 3 khoảng
+    // Class helper để đại diện cho một khoảng thời gian
+    private static class TimeSlot {
+        int startMinutes;
+        int endMinutes;
         
-        // Đảm bảo không vượt quá thời gian làm việc
-        if (startTime + duration > workEnd) {
-            startTime = workStart; // Bắt đầu từ đầu nếu không đủ thời gian
+        TimeSlot(int startMinutes, int endMinutes) {
+            this.startMinutes = startMinutes;
+            this.endMinutes = endMinutes;
         }
-        
-        return startTime;
-    }
-    
-    // Tính ngày tối ưu
-    private String calculateOptimalDate(Task task, int iteration) {
-        LocalDate deadline = task.getDeadline();
-        LocalDate today = LocalDate.now();
-        
-        // Nếu deadline trong tương lai, phân bổ từ hôm nay đến deadline
-        if (deadline.isAfter(today)) {
-            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(today, deadline);
-            if (daysBetween > 0) {
-                LocalDate optimalDate = today.plusDays(iteration % (int) daysBetween);
-                return optimalDate.toString();
-            }
-        }
-        
-        // Fallback: bắt đầu từ hôm nay
-        return today.plusDays(iteration).toString();
     }
 
     // Chuyển đổi thời gian thành phút

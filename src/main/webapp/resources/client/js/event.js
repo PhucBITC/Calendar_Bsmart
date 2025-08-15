@@ -59,21 +59,47 @@ function initEvent(event) {
 }
 
 export function isEventAllDay(event) {
-  return event.startTime === 0 && event.endTime === 1440;
+  const startTimeMinutes = timeStringToMinutes(event.startTime);
+  const endTimeMinutes = timeStringToMinutes(event.endTime);
+  return startTimeMinutes === 0 && endTimeMinutes === 1440;
+}
+
+// Helper function to convert time string to minutes
+function timeStringToMinutes(time) {
+  if (typeof time === "number") {
+    return time; // Already in minutes
+  }
+  
+  if (typeof time === "string" && time.includes(":")) {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+  }
+  
+  // Fallback to 0 if invalid format
+  console.warn("Invalid time format:", time);
+  return 0;
 }
 
 export function eventStartsBefore(eventA, eventB) {
-  return eventA.startTime < eventB.startTime;
+  const startTimeA = timeStringToMinutes(eventA.startTime);
+  const startTimeB = timeStringToMinutes(eventB.startTime);
+  return startTimeA < startTimeB;
 }
 
 export function eventEndsBefore(eventA, eventB) {
-  return eventA.endTime < eventB.endTime;
+  const endTimeA = timeStringToMinutes(eventA.endTime);
+  const endTimeB = timeStringToMinutes(eventB.endTime);
+  return endTimeA < endTimeB;
 }
 
-
 export function eventCollidesWith(eventA, eventB) {
-  const maxStartTime = Math.max(eventA.startTime, eventB.startTime);
-  const minEndTime = Math.min(eventA.endTime, eventB.endTime);
+  const startTimeA = timeStringToMinutes(eventA.startTime);
+  const endTimeA = timeStringToMinutes(eventA.endTime);
+  const startTimeB = timeStringToMinutes(eventB.startTime);
+  const endTimeB = timeStringToMinutes(eventB.endTime);
+  
+  const maxStartTime = Math.max(startTimeA, startTimeB);
+  const minEndTime = Math.min(endTimeA, endTimeB);
 
   return minEndTime > maxStartTime;
 }
