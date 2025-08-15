@@ -1,11 +1,17 @@
 package com.bsmart.controller.client;
 
 import com.bsmart.domain.Task;
+import com.bsmart.domain.User;
 import com.bsmart.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/tasks")
@@ -23,9 +29,43 @@ public class TaskController {
 
     // Xử lý form lưu task
     @PostMapping("/save")
-    public String saveTask(@ModelAttribute("task") Task task) {
+    public String saveTask(@ModelAttribute("task") Task task, HttpServletRequest request) {
+        // Lấy user hiện tại từ session
+        User currentUser = (User) request.getSession().getAttribute("currentUser");
+        if (currentUser != null) {
+            task.setUser(currentUser);
+        }
+        
         taskService.saveTask(task);
         return "redirect:/tasks/list";
+    }
+
+    // API: Lưu task (AJAX - trả về JSON)
+    @PostMapping("/api/save")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> saveTaskApi(@ModelAttribute Task task, HttpServletRequest request) {
+        try {
+            // Lấy user hiện tại từ session
+            User currentUser = (User) request.getSession().getAttribute("currentUser");
+            if (currentUser != null) {
+                task.setUser(currentUser);
+            }
+            
+            Task savedTask = taskService.saveTask(task);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Task saved successfully");
+            response.put("data", savedTask);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Error saving task: " + e.getMessage());
+            
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     // Hiển thị danh sách nhiệm vụ

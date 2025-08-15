@@ -104,16 +104,22 @@ async function syncFromServer() {
     const schedules = await response.json();
     
     // Convert schedules từ server thành format của localStorage
-    const events = schedules.map(schedule => ({
-      id: schedule.id,
-      title: schedule.description,
-      description: schedule.description,
-      date: new Date(schedule.dayOfWeek), // Sử dụng dayOfWeek từ server
-      startTime: schedule.startTime,
-      endTime: schedule.endTime,
-      color: schedule.color,
-      dayOfWeek: schedule.dayOfWeek
-    }));
+    const events = schedules.map(schedule => {
+      console.log("Schedule from server:", schedule);
+      console.log("startTime type:", typeof schedule.startTime, "value:", schedule.startTime);
+      console.log("endTime type:", typeof schedule.endTime, "value:", schedule.endTime);
+      
+      return {
+        id: schedule.id,
+        title: schedule.description,
+        description: schedule.description,
+        date: new Date(schedule.dayOfWeek), // Sử dụng dayOfWeek từ server
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        color: schedule.color,
+        dayOfWeek: schedule.dayOfWeek
+      };
+    });
     
     console.log("Synced events from server:", events);
     saveEventsIntoLocalStorage(events);

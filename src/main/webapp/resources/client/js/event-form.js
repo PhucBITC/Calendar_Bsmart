@@ -30,37 +30,65 @@ export function initEventForm(toaster) {
         // Lấy event với ID thật từ database
         const savedEvent = result.data;
         
-        // Tạo event object với ID từ database
-        const eventWithRealId = {
-          ...formEvent,
-          id: savedEvent.id, // ID thật từ database
-          title: savedEvent.description,
-          description: savedEvent.description,
-          date: new Date(savedEvent.dayOfWeek), // Sử dụng dayOfWeek từ server
-          startTime: savedEvent.startTime,
-          endTime: savedEvent.endTime,
-          color: savedEvent.color,
-          dayOfWeek: savedEvent.dayOfWeek
-        };
-
-        console.log("=== SAVED EVENT ===");
-        console.log("Database ID:", savedEvent.id);
-        console.log("Event object:", eventWithRealId);
-
-        // Cập nhật localStorage với ID đúng
-        if (mode === "create") {
-          document.dispatchEvent(new CustomEvent("event-create", {
-            detail: { event: eventWithRealId },
-            bubbles: true
+        if (result.isRepeating && Array.isArray(savedEvent)) {
+          // Xử lý multiple schedules (repeating)
+          console.log("=== SAVED REPEATING EVENTS ===");
+          console.log("Number of schedules:", savedEvent.length);
+          
+          // Tạo events cho tất cả schedules
+          const eventsWithRealIds = savedEvent.map(schedule => ({
+            id: schedule.id,
+            title: schedule.description,
+            description: schedule.description,
+            date: new Date(schedule.dayOfWeek),
+            startTime: schedule.startTime,
+            endTime: schedule.endTime,
+            color: schedule.color,
+            dayOfWeek: schedule.dayOfWeek
           }));
-        } else if (mode === "edit") {
-          document.dispatchEvent(new CustomEvent("event-edit", {
-            detail: { event: eventWithRealId },
-            bubbles: true
-          }));
+
+          // Dispatch events cho từng schedule
+          eventsWithRealIds.forEach(event => {
+            document.dispatchEvent(new CustomEvent("event-create", {
+              detail: { event: event },
+              bubbles: true
+            }));
+          });
+
+          toaster.success(`Đã tạo ${savedEvent.length} lịch trình lặp lại!`);
+        } else {
+          // Xử lý single schedule
+          const eventWithRealId = {
+            ...formEvent,
+            id: savedEvent.id,
+            title: savedEvent.description,
+            description: savedEvent.description,
+            date: new Date(savedEvent.dayOfWeek),
+            startTime: savedEvent.startTime,
+            endTime: savedEvent.endTime,
+            color: savedEvent.color,
+            dayOfWeek: savedEvent.dayOfWeek
+          };
+
+          console.log("=== SAVED EVENT ===");
+          console.log("Database ID:", savedEvent.id);
+          console.log("Event object:", eventWithRealId);
+
+          // Cập nhật localStorage với ID đúng
+          if (mode === "create") {
+            document.dispatchEvent(new CustomEvent("event-create", {
+              detail: { event: eventWithRealId },
+              bubbles: true
+            }));
+          } else if (mode === "edit") {
+            document.dispatchEvent(new CustomEvent("event-edit", {
+              detail: { event: eventWithRealId },
+              bubbles: true
+            }));
+          }
+
+          toaster.success("Schedule saved successfully!");
         }
-
-        toaster.success("Schedule saved successfully!");
         
         // Close dialog
         const dialog = formElement.closest('[data-dialog]');

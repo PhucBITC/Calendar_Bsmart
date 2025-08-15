@@ -1,14 +1,14 @@
 package com.bsmart.repository;
 
 import com.bsmart.domain.Task;
+import com.bsmart.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    // Tự động có sẵn các hàm như:
-    // - findAll()
-    // - findById()
-    // - save()
-    // - deleteById()
+    // Tìm tasks theo user
+    List<Task> findByUser(User user);
 }

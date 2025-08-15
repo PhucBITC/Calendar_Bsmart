@@ -13,8 +13,11 @@ import { initViewSelect } from "./view-select.js";
 import { initResponsive } from "./responsive.js";
 import { initUrl } from "./url.js";
 import { initSync } from "./sync.js";
+import { initSmartSchedule } from "./smart-schedule.js";
+import { initSmartScheduleButton } from "./smart-schedule-button.js";
 
 const eventStore = initEventStore();
+window.eventStore = eventStore; // Expose globally for smart-schedule.js
 initCalendar(eventStore);
 initEventCreateButtons();
 initEventDeleteDialog();
@@ -29,3 +32,5 @@ initViewSelect();
 initUrl();
 initResponsive();
 initSync();
+initSmartSchedule();
+initSmartScheduleButton();

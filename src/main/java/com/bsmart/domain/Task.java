@@ -13,7 +13,11 @@ public class Task {
 
     private String title;
 
+    private String description; // Mô tả công việc
+
     private int duration; // thời lượng (giờ)
+
+    private Integer estimatedDuration; // thời lượng ước tính (phút)
 
     @Enumerated(EnumType.STRING)
     private Priority priority;
@@ -43,12 +47,28 @@ public class Task {
         this.title = title;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getDuration() {
         return duration;
     }
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public Integer getEstimatedDuration() {
+        return estimatedDuration;
+    }
+
+    public void setEstimatedDuration(Integer estimatedDuration) {
+        this.estimatedDuration = estimatedDuration;
     }
 
     public Priority getPriority() {
