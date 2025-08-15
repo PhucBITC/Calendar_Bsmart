@@ -62,7 +62,7 @@
                             <path d="M4.93 19.07l2.83-2.83" />
                             <path d="M16.24 7.76l2.83-2.83" />
                         </svg>
-                        Sinh lịch tự động
+                        Auto Generate Schedule
                     </button>
 
                     <div class="mini-calendar" data-mini-calendar>
@@ -168,11 +168,11 @@
                                     </svg>
                                 </button>
                                 <div class="user-menu__dropdown" id="userMenuDropdown" style="display: none;">
-                                    <a href="/profile" class="user-menu__item">Xem hồ sơ</a>
+                                    <a href="/profile" class="user-menu__item">View Profile</a>
                                     <c:if test="${sessionScope.currentUser.role == 'ADMIN'}">
-                                        <a href="/admin" class="user-menu__item">Quản lý hệ thống</a>
+                                        <a href="/admin" class="user-menu__item">System Management</a>
                                     </c:if>
-                                    <a href="/auth/logout" class="user-menu__item">Đăng xuất</a>
+                                    <a href="/auth/logout" class="user-menu__item">Logout</a>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +214,7 @@
                             <path d="M5 12h14" />
                             <path d="M12 5v14" />
                         </svg>
-                        Tạo lịch cố định
+                        Create Fixed Schedule
                     </button>
                     <button class="fab-menu__option" data-smart-schedule-button>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
@@ -222,7 +222,7 @@
                             <circle cx="12" cy="12" r="10" />
                             <path d="M12 6v6l4 2" />
                         </svg>
-                        Sinh lịch tự động
+                        Auto Generate Schedule
                     </button>
                 </div>
             </div>
@@ -316,13 +316,13 @@
                                 </div>
 
                                 <div class="form__field">
-                                    <label class="form__label" for="repeat">Lặp lại</label>
+                                    <label class="form__label" for="repeat">Repeat</label>
                                     <div class="select select--fill">
                                         <select class="select__select" id="repeat" name="repeatType">
-                                            <option value="none">Không lặp lại</option>
-                                            <option value="daily">Hàng ngày</option>
-                                            <option value="weekly">Hàng tuần</option>
-                                            <option value="monthly">Hàng tháng</option>
+                                            <option value="none">No repeat</option>
+                                            <option value="daily">Daily</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
                                         </select>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -477,7 +477,7 @@
             <dialog class="dialog" data-dialog="smart-schedule">
                 <div class="dialog__wrapper">
                     <div class="dialog__header">
-                        <h2 class="dialog__title">Sinh lịch tự động</h2>
+                        <h2 class="dialog__title">Auto Generate Schedule</h2>
                         <button class="button button--icon button--secondary" type="button" data-dialog-close-button>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -490,27 +490,27 @@
 
                     <div class="dialog__content">
                         <div class="form__fields">
-                            <!-- Thông tin công việc -->
+                            <!-- Task Information -->
                             <div class="form__field">
-                                <label class="form__label" for="task-title">Tên công việc</label>
+                                <label class="form__label" for="task-title">Task Name</label>
                                 <input class="input input--fill" id="task-title" name="taskTitle" type="text"
-                                    placeholder="Nhập tên công việc..." required />
+                                    placeholder="Enter task name..." required />
                             </div>
 
                             <div class="form__field">
-                                <label class="form__label" for="task-description">Mô tả</label>
+                                <label class="form__label" for="task-description">Description</label>
                                 <textarea class="input input--fill" id="task-description" name="taskDescription"
-                                    placeholder="Mô tả chi tiết công việc..." rows="3"></textarea>
+                                    placeholder="Detailed task description..." rows="3"></textarea>
                             </div>
 
                             <div class="form__split">
                                 <div class="form__field">
-                                    <label class="form__label" for="task-priority">Mức độ ưu tiên</label>
+                                    <label class="form__label" for="task-priority">Priority Level</label>
                                     <div class="select select--fill">
                                         <select class="select__select" id="task-priority" name="taskPriority">
-                                            <option value="HIGH">Cao</option>
-                                            <option value="MEDIUM" selected>Trung bình</option>
-                                            <option value="LOW">Thấp</option>
+                                            <option value="HIGH">High</option>
+                                            <option value="MEDIUM" selected>Medium</option>
+                                            <option value="LOW">Low</option>
                                         </select>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -529,47 +529,46 @@
 
                             <div class="form__split">
                                 <div class="form__field">
-                                    <label class="form__label" for="estimated-duration">Thời lượng ước tính
-                                        (phút)</label>
+                                    <label class="form__label" for="estimated-duration">Estimated Duration (minutes)</label>
                                     <input class="input input--fill" id="estimated-duration" name="estimatedDuration"
                                         type="number" value="60" min="15" max="480" required />
                                 </div>
 
                                 <div class="form__field">
-                                    <label class="form__label" for="repeat-count">Số lần lặp lại</label>
+                                    <label class="form__label" for="repeat-count">Number of Repetitions</label>
                                     <input class="input input--fill" id="repeat-count" name="repeatCount" type="number"
                                         value="1" min="1" max="30" required />
                                 </div>
                             </div>
 
-                            <!-- Khung giờ rảnh -->
+                            <!-- Available Time Slots -->
                             <div class="form__field">
-                                <label class="form__label">Khung giờ rảnh trong ngày</label>
+                                <label class="form__label">Available Time Slots in Day</label>
                                 <div class="form__split">
 
                                     <div class="form__field">
-                                        <label class="form__label" for="start-hour">Giờ bắt đầu</label>
+                                        <label class="form__label" for="start-hour">Start Hour</label>
                                         <input class="input input--fill" id="start-hour" name="startHour" type="time"
                                             value="08:00" required />
                                     </div>
 
 
                                     <div class="form__field">
-                                        <label class="form__label" for="end-hour">Giờ kết thúc</label>
+                                        <label class="form__label" for="end-hour">End Hour</label>
                                         <input class="input input--fill" id="end-hour" name="endHour" type="time"
                                             value="17:00" required />
                                     </div>
                                 </div>
                             </div>
                             <div class="form__field">
-                                <label class="form__label" for="break-time">Thời gian nghỉ giữa các task (phút)</label>
+                                <label class="form__label" for="break-time">Break Time Between Tasks (minutes)</label>
                                 <input class="input input--fill" id="break-time" name="breakTime" type="number"
                                     value="15" min="0" max="60" required />
                             </div>
                         </div>
 
                         <div id="smart-schedule-result" style="margin-top: 1rem; display: none;">
-                            <h3>Kết quả sinh lịch:</h3>
+                            <h3>Schedule Generation Result:</h3>
                             <div id="schedule-suggestions"
                                 style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; background: #f8fafc;">
                                 <!-- Suggestions will be populated here -->
@@ -579,11 +578,10 @@
 
                     <div class="dialog__footer">
                         <div class="dialog__actions">
-                            <button class="button button--secondary" type="button" data-dialog-close-button>Hủy</button>
+                            <button class="button button--secondary" type="button" data-dialog-close-button>Cancel</button>
                             <button class="button button--primary" id="generate-schedule-btn"
-                                style="cursor: pointer; pointer-events: auto;">Sinh lịch</button>
-                            <button class="button button--success" id="apply-schedule-btn" style="display: none;">Áp
-                                dụng tất cả</button>
+                                style="cursor: pointer; pointer-events: auto;">Generate Schedule</button>
+                            <button class="button button--success" id="apply-schedule-btn" style="display: none;">Apply All</button>
                         </div>
                     </div>
                 </div>
@@ -799,13 +797,13 @@
                         });
                     }
 
-                    // Đảm bảo tất cả nút có data-smart-schedule-button đều mở dialog
+                    // Ensure all buttons with data-smart-schedule-button open dialog
                     document.querySelectorAll('[data-smart-schedule-button]').forEach(function (btn) {
                         btn.addEventListener('click', function (e) {
                             e.stopPropagation();
                             const dialog = document.querySelector('dialog[data-dialog="smart-schedule"]');
                             if (dialog) dialog.showModal();
-                            // Ẩn menu fab nếu đang mở
+                            // Hide fab menu if open
                             const fabMenuOptions = document.getElementById('fabMenuOptions');
                             if (fabMenuOptions) fabMenuOptions.style.display = 'none';
                         });

@@ -45,11 +45,11 @@ public class AuthController {
             @RequestParam(value = "logout", required = false) String logout) {
 
         if (error != null) {
-            model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng!");
+            model.addAttribute("errorMessage", "Incorrect username or password!");
         }
 
         if (logout != null) {
-            model.addAttribute("successMessage", "Đăng xuất thành công!");
+            model.addAttribute("successMessage", "Logout successful!");
         }
 
         model.addAttribute("loginDTO", new UserLoginDTO());
@@ -91,7 +91,7 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             redirectAttributes.addFlashAttribute("successMessage",
-                    "Đăng ký thành công! Chào mừng " + user.getUsername());
+                    "Registration successful! Welcome" + user.getUsername());
 
             return "redirect:/auth/login";
 
@@ -99,7 +99,7 @@ public class AuthController {
             model.addAttribute("errorMessage", e.getMessage());
             return "client/auth/register";
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại.");
+            model.addAttribute("errorMessage", "An error occurred during registration. Please try again.");
             return "client/auth/register";
         }
     }
@@ -118,7 +118,7 @@ public class AuthController {
             request.getSession().setAttribute("currentUser", user);
             return "redirect:/schedule/add"; // Sửa đường dẫn đúng
         } else {
-            model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng!");
+            model.addAttribute("errorMessage", "Incorrect username or password!");
             return "client/auth/login";
         }
     }
@@ -135,7 +135,7 @@ public class AuthController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Đăng xuất thành công!");
+        redirectAttributes.addFlashAttribute("successMessage", "Logout successful!");
         return "redirect:/auth/login";
     }
 
@@ -167,10 +167,10 @@ public class AuthController {
 
             userService.updateUser(currentUser);
 
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật thông tin.");
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the profile.");
         }
 
         return "redirect:/auth/profile";
