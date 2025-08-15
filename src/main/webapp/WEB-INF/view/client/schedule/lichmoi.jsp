@@ -55,7 +55,8 @@
 
                     <button class="button button--primary button--lg" data-event-create-button>Create event</button>
 
-                    <button class="button button--secondary button--lg" data-smart-schedule-button style="margin-top: 1rem;">
+                    <button class="button button--secondary button--lg" data-smart-schedule-button
+                        style="margin-top: 1rem;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="button__icon">
@@ -211,7 +212,7 @@
 
                         <div class="dialog__content">
                             <div class="form__fields">
-                                <input type="hidden" id="id" name="id" value="${schedule.id}"/>
+                                <input type="hidden" id="id" name="id" value="${schedule.id}" />
 
                                 <div class="form__field">
                                     <label class="form__label" for="title">Title</label>
@@ -290,9 +291,9 @@
                                             <option value="weekly">Hàng tuần</option>
                                             <option value="monthly">Hàng tháng</option>
                                         </select>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" class="select__icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" class="select__icon">
                                             <path d="m6 9 6 6 6-6" />
                                         </svg>
                                     </div>
@@ -459,13 +460,13 @@
                             <!-- Thông tin công việc -->
                             <div class="form__field">
                                 <label class="form__label" for="task-title">Tên công việc</label>
-                                <input class="input input--fill" id="task-title" name="taskTitle" type="text" 
+                                <input class="input input--fill" id="task-title" name="taskTitle" type="text"
                                     placeholder="Nhập tên công việc..." required />
                             </div>
 
                             <div class="form__field">
                                 <label class="form__label" for="task-description">Mô tả</label>
-                                <textarea class="input input--fill" id="task-description" name="taskDescription" 
+                                <textarea class="input input--fill" id="task-description" name="taskDescription"
                                     placeholder="Mô tả chi tiết công việc..." rows="3"></textarea>
                             </div>
 
@@ -478,9 +479,9 @@
                                             <option value="MEDIUM" selected>Trung bình</option>
                                             <option value="LOW">Thấp</option>
                                         </select>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" class="select__icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" class="select__icon">
                                             <path d="m6 9 6 6 6-6" />
                                         </svg>
                                     </div>
@@ -488,21 +489,23 @@
 
                                 <div class="form__field">
                                     <label class="form__label" for="task-deadline">Deadline</label>
-                                    <input class="input input--fill" id="task-deadline" name="taskDeadline" type="date" required />
+                                    <input class="input input--fill" id="task-deadline" name="taskDeadline" type="date"
+                                        required />
                                 </div>
                             </div>
 
                             <div class="form__split">
                                 <div class="form__field">
-                                    <label class="form__label" for="estimated-duration">Thời lượng ước tính (phút)</label>
-                                    <input class="input input--fill" id="estimated-duration" name="estimatedDuration" 
+                                    <label class="form__label" for="estimated-duration">Thời lượng ước tính
+                                        (phút)</label>
+                                    <input class="input input--fill" id="estimated-duration" name="estimatedDuration"
                                         type="number" value="60" min="15" max="480" required />
                                 </div>
 
                                 <div class="form__field">
                                     <label class="form__label" for="repeat-count">Số lần lặp lại</label>
-                                    <input class="input input--fill" id="repeat-count" name="repeatCount" 
-                                        type="number" value="1" min="1" max="30" required />
+                                    <input class="input input--fill" id="repeat-count" name="repeatCount" type="number"
+                                        value="1" min="1" max="30" required />
                                 </div>
                             </div>
 
@@ -513,38 +516,29 @@
 
                                     <div class="form__field">
                                         <label class="form__label" for="start-hour">Giờ bắt đầu</label>
-                                        <input class="input input--fill" id="start-hour" name="startHour" type="time" value="08:00" required />
+                                        <input class="input input--fill" id="start-hour" name="startHour" type="time"
+                                            value="08:00" required />
                                     </div>
 
-                            <!-- Thuật toán sử dụng -->
-                            <div class="form__field">
-                                <label class="form__label">Thuật toán sắp xếp</label>
-                                <div style="margin-top: 0.5rem;">
-                                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                        <input type="checkbox" name="useEDF" />
-                                        <span>EDF (Earliest Deadline First)</span>
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <input type="checkbox" name="useGreedy" />
-                                        <span>Greedy (Ưu tiên cao)</span>
-                                    </label>
-                                </div>
-                            </div>
+
                                     <div class="form__field">
                                         <label class="form__label" for="end-hour">Giờ kết thúc</label>
-                                        <input class="input input--fill" id="end-hour" name="endHour" type="time" value="17:00" required />
+                                        <input class="input input--fill" id="end-hour" name="endHour" type="time"
+                                            value="17:00" required />
                                     </div>
                                 </div>
                             </div>
                             <div class="form__field">
                                 <label class="form__label" for="break-time">Thời gian nghỉ giữa các task (phút)</label>
-                                <input class="input input--fill" id="break-time" name="breakTime" type="number" value="15" min="0" max="60" required />
+                                <input class="input input--fill" id="break-time" name="breakTime" type="number"
+                                    value="15" min="0" max="60" required />
                             </div>
                         </div>
 
                         <div id="smart-schedule-result" style="margin-top: 1rem; display: none;">
                             <h3>Kết quả sinh lịch:</h3>
-                            <div id="schedule-suggestions" style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; background: #f8fafc;">
+                            <div id="schedule-suggestions"
+                                style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; background: #f8fafc;">
                                 <!-- Suggestions will be populated here -->
                             </div>
                         </div>
@@ -553,8 +547,10 @@
                     <div class="dialog__footer">
                         <div class="dialog__actions">
                             <button class="button button--secondary" type="button" data-dialog-close-button>Hủy</button>
-                            <button class="button button--primary" id="generate-schedule-btn" style="cursor: pointer; pointer-events: auto;">Sinh lịch</button>
-                            <button class="button button--success" id="apply-schedule-btn" style="display: none;">Áp dụng tất cả</button>
+                            <button class="button button--primary" id="generate-schedule-btn"
+                                style="cursor: pointer; pointer-events: auto;">Sinh lịch</button>
+                            <button class="button button--success" id="apply-schedule-btn" style="display: none;">Áp
+                                dụng tất cả</button>
                         </div>
                     </div>
                 </div>

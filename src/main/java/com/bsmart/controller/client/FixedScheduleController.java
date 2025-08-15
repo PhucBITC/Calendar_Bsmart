@@ -26,7 +26,7 @@ public class FixedScheduleController {
 
     @Autowired
     private FixedScheduleService fixedScheduleService;
-    
+
     @Autowired
     private UserService userService;
 
@@ -66,7 +66,8 @@ public class FixedScheduleController {
     // API: Lưu hoặc cập nhật lịch (AJAX - trả về JSON)
     @PostMapping("/api/save")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> saveApi(@ModelAttribute FixedSchedule schedule, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> saveApi(@ModelAttribute FixedSchedule schedule,
+            HttpServletRequest request) {
         try {
             System.out.println("=== API SAVE ===");
             System.out.println("ID: " + schedule.getId());
@@ -83,7 +84,7 @@ public class FixedScheduleController {
                     System.out.println("Converted startTime: " + startTimeStr + " -> " + schedule.getStartTime());
                 }
             }
-            
+
             if (schedule.getEndTime() == null) {
                 String endTimeStr = request.getParameter("endTime");
                 if (endTimeStr != null) {
@@ -107,14 +108,15 @@ public class FixedScheduleController {
                 // Tạo nhiều schedules dựa trên repeat type
                 List<FixedSchedule> schedules = createRepeatingSchedules(schedule, repeatType);
                 List<Map<String, Object>> savedSchedules = new ArrayList<>();
-                
+
                 for (FixedSchedule repeatSchedule : schedules) {
                     FixedSchedule saved = fixedScheduleService.saveSchedule(repeatSchedule);
                     Map<String, Object> scheduleData = new HashMap<>();
                     scheduleData.put("id", saved.getId());
                     scheduleData.put("description", saved.getDescription());
                     scheduleData.put("dayOfWeek", saved.getDayOfWeek());
-                    scheduleData.put("startTime", saved.getStartTime() != null ? saved.getStartTime().toString() : null);
+                    scheduleData.put("startTime",
+                            saved.getStartTime() != null ? saved.getStartTime().toString() : null);
                     scheduleData.put("endTime", saved.getEndTime() != null ? saved.getEndTime().toString() : null);
                     scheduleData.put("color", saved.getColor());
                     savedSchedules.add(scheduleData);
@@ -136,16 +138,18 @@ public class FixedScheduleController {
                 scheduleData.put("id", savedSchedule.getId());
                 scheduleData.put("description", savedSchedule.getDescription());
                 scheduleData.put("dayOfWeek", savedSchedule.getDayOfWeek());
-                scheduleData.put("startTime", savedSchedule.getStartTime() != null ? savedSchedule.getStartTime().toString() : null);
-                scheduleData.put("endTime", savedSchedule.getEndTime() != null ? savedSchedule.getEndTime().toString() : null);
+                scheduleData.put("startTime",
+                        savedSchedule.getStartTime() != null ? savedSchedule.getStartTime().toString() : null);
+                scheduleData.put("endTime",
+                        savedSchedule.getEndTime() != null ? savedSchedule.getEndTime().toString() : null);
                 scheduleData.put("color", savedSchedule.getColor());
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Schedule saved successfully");
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Schedule saved successfully");
                 response.put("data", scheduleData);
 
-            return ResponseEntity.ok(response);
+                return ResponseEntity.ok(response);
             }
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
@@ -194,7 +198,8 @@ public class FixedScheduleController {
     // API: Sinh lịch tự động (EDF + Greedy)
     @PostMapping("/api/generate")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> generateSmartSchedule(@RequestBody Map<String, Object> request, HttpServletRequest httpRequest) {
+    public ResponseEntity<Map<String, Object>> generateSmartSchedule(@RequestBody Map<String, Object> request,
+            HttpServletRequest httpRequest) {
         try {
             // Lấy user hiện tại
             User currentUser = (User) httpRequest.getSession().getAttribute("currentUser");
@@ -214,7 +219,7 @@ public class FixedScheduleController {
 
             // Lấy tất cả tasks của user
             List<Task> userTasks = taskService.getTasksByUser(currentUser);
-            
+
             if (userTasks.isEmpty()) {
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
@@ -225,9 +230,7 @@ public class FixedScheduleController {
 
             // Chuyển đổi tasks thành schedule suggestions
             List<Map<String, Object>> scheduleSuggestions = generateScheduleSuggestions(
-                userTasks, targetDate, startHour, endHour, breakTime, useEDF, useGreedy
-            );
-
+                    userTasks, targetDate, startHour, endHour, breakTime, true, true);
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("data", scheduleSuggestions);
@@ -246,11 +249,12 @@ public class FixedScheduleController {
     // API: Sinh lịch tự động dựa trên thông tin task mới
     @PostMapping("/api/generate-task-schedule")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> generateTaskSchedule(@RequestBody Map<String, Object> request, HttpServletRequest httpRequest) {
+    public ResponseEntity<Map<String, Object>> generateTaskSchedule(@RequestBody Map<String, Object> request,
+            HttpServletRequest httpRequest) {
         try {
             System.out.println("=== GENERATE TASK SCHEDULE API CALLED ===");
             System.out.println("Request: " + request);
-            
+
             // Lấy user hiện tại
             User currentUser = (User) httpRequest.getSession().getAttribute("currentUser");
             if (currentUser == null) {
@@ -260,7 +264,7 @@ public class FixedScheduleController {
                 response.put("message", "User not authenticated");
                 return ResponseEntity.status(401).body(response);
             }
-            
+
             System.out.println("Current user: " + currentUser.getUsername());
 
             String taskTitle = (String) request.get("taskTitle");
@@ -272,14 +276,12 @@ public class FixedScheduleController {
             String startHour = (String) request.get("startHour");
             String endHour = (String) request.get("endHour");
             Integer breakTime = (Integer) request.get("breakTime");
-            Boolean useEDF = (Boolean) request.get("useEDF");
-            Boolean useGreedy = (Boolean) request.get("useGreedy");
             
+
             System.out.println("Parsed parameters:");
             System.out.println("- taskTitle: " + taskTitle);
             System.out.println("- taskDeadline: " + taskDeadline);
-            System.out.println("- useEDF: " + useEDF);
-            System.out.println("- useGreedy: " + useGreedy);
+          
 
             // Tạo task object để sử dụng trong thuật toán
             Task task = new Task();
@@ -289,21 +291,20 @@ public class FixedScheduleController {
             task.setDeadline(LocalDate.parse(taskDeadline));
             task.setEstimatedDuration(estimatedDuration);
             task.setUser(currentUser);
-            
+
             System.out.println("Task created successfully");
 
             // Sinh lịch dựa trên thông tin task
             List<Map<String, Object>> scheduleSuggestions = generateTaskBasedSchedule(
-                task, repeatCount, startHour, endHour, breakTime, useEDF, useGreedy
-            );
-            
+                    task, repeatCount, startHour, endHour, breakTime, true , true);
+
             System.out.println("Generated " + scheduleSuggestions.size() + " suggestions");
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("data", scheduleSuggestions);
             response.put("message", "Generated " + scheduleSuggestions.size() + " schedule suggestions");
-            
+
             System.out.println("Response: " + response);
 
             return ResponseEntity.ok(response);
@@ -320,26 +321,27 @@ public class FixedScheduleController {
 
     // Thuật toán sinh lịch tự động
     private List<Map<String, Object>> generateScheduleSuggestions(
-            List<Task> tasks, String targetDate, String startHour, String endHour, 
+            List<Task> tasks, String targetDate, String startHour, String endHour,
             Integer breakTime, Boolean useEDF, Boolean useGreedy) {
-        
+
         List<Map<String, Object>> suggestions = new ArrayList<>();
-        
+
         // Chuyển đổi thời gian làm việc thành phút
         int workStartMinutes = timeToMinutes(startHour);
         int workEndMinutes = timeToMinutes(endHour);
         int availableMinutes = workEndMinutes - workStartMinutes;
-        
+
         // Sắp xếp tasks theo thuật toán được chọn
         List<Task> sortedTasks = new ArrayList<>(tasks);
-        
+
         if (useEDF && useGreedy) {
             // Kết hợp EDF và Greedy: ưu tiên deadline trước, sau đó ưu tiên cao
             sortedTasks.sort((t1, t2) -> {
                 // So sánh deadline trước
                 if (t1.getDeadline() != null && t2.getDeadline() != null) {
                     int deadlineCompare = t1.getDeadline().compareTo(t2.getDeadline());
-                    if (deadlineCompare != 0) return deadlineCompare;
+                    if (deadlineCompare != 0)
+                        return deadlineCompare;
                 }
                 // Nếu deadline bằng nhau hoặc null, so sánh priority
                 return t2.getPriority().ordinal() - t1.getPriority().ordinal();
@@ -347,25 +349,29 @@ public class FixedScheduleController {
         } else if (useEDF) {
             // Chỉ dùng EDF: sắp xếp theo deadline
             sortedTasks.sort((t1, t2) -> {
-                if (t1.getDeadline() == null && t2.getDeadline() == null) return 0;
-                if (t1.getDeadline() == null) return 1;
-                if (t2.getDeadline() == null) return -1;
+                if (t1.getDeadline() == null && t2.getDeadline() == null)
+                    return 0;
+                if (t1.getDeadline() == null)
+                    return 1;
+                if (t2.getDeadline() == null)
+                    return -1;
                 return t1.getDeadline().compareTo(t2.getDeadline());
             });
         } else if (useGreedy) {
             // Chỉ dùng Greedy: sắp xếp theo priority
             sortedTasks.sort((t1, t2) -> t2.getPriority().ordinal() - t1.getPriority().ordinal());
         }
-        
+
         // Phân bổ thời gian cho tasks
         int currentTime = workStartMinutes;
-        
+
         for (Task task : sortedTasks) {
-            if (currentTime >= workEndMinutes) break;
-            
+            if (currentTime >= workEndMinutes)
+                break;
+
             // Ước tính thời gian cho task (dựa trên priority hoặc mặc định 60 phút)
             int taskDuration = estimateTaskDuration(task);
-            
+
             // Kiểm tra xem có đủ thời gian không
             if (currentTime + taskDuration <= workEndMinutes) {
                 Map<String, Object> suggestion = new HashMap<>();
@@ -374,99 +380,98 @@ public class FixedScheduleController {
                 suggestion.put("startTime", minutesToTime(currentTime));
                 suggestion.put("endTime", minutesToTime(currentTime + taskDuration));
                 suggestion.put("priority", task.getPriority().name());
-                suggestion.put("algorithm", useEDF && useGreedy ? "EDF + Greedy" : 
-                             useEDF ? "EDF" : useGreedy ? "Greedy" : "Default");
-                
+                suggestion.put("algorithm",
+                        useEDF && useGreedy ? "EDF + Greedy" : useEDF ? "EDF" : useGreedy ? "Greedy" : "Default");
+
                 suggestions.add(suggestion);
-                
+
                 // Cập nhật thời gian hiện tại (bao gồm break time)
                 currentTime += taskDuration + breakTime;
             }
         }
-        
+
         return suggestions;
     }
-    
+
     // Thuật toán sinh lịch tự động dựa trên task mới - PHIÊN BẢN MỚI
     private List<Map<String, Object>> generateTaskBasedSchedule(
-            Task task, Integer repeatCount, String startHour, String endHour, 
+            Task task, Integer repeatCount, String startHour, String endHour,
             Integer breakTime, Boolean useEDF, Boolean useGreedy) {
-        
+
         List<Map<String, Object>> suggestions = new ArrayList<>();
-        
+
         // Chuyển đổi thời gian làm việc thành phút
         int workStartMinutes = timeToMinutes(startHour);
         int workEndMinutes = timeToMinutes(endHour);
         int taskDuration = task.getEstimatedDuration() != null ? task.getEstimatedDuration() : 60;
-        
+
         // Lấy danh sách lịch cố định của user
         User currentUser = task.getUser();
         List<FixedSchedule> existingSchedules = fixedScheduleService.getSchedulesByUser(currentUser);
-        
+
         // Ngày bắt đầu (hôm nay)
         LocalDate startDate = LocalDate.now();
         LocalDate deadline = task.getDeadline();
-        
+
         // Giờ hiện tại (để kiểm tra slot trong ngày hôm nay)
         LocalTime currentTime = LocalTime.now();
         int currentMinutes = currentTime.getHour() * 60 + currentTime.getMinute();
-        
+
         // Tính toán độ ưu tiên dựa trên thuật toán
         int priority = calculateTaskPriority(task, useEDF, useGreedy);
-        
+
         int createdCount = 0;
         LocalDate currentDate = startDate;
-        
+
         while (createdCount < repeatCount && !currentDate.isAfter(deadline)) {
             // Kiểm tra xem có thể tạo slot trong ngày này không
             Map<String, Object> slot = findAvailableSlot(
-                currentDate, task, taskDuration, workStartMinutes, workEndMinutes, 
-                breakTime, existingSchedules, currentMinutes, useEDF, useGreedy
-            );
-            
+                    currentDate, task, taskDuration, workStartMinutes, workEndMinutes,
+                    breakTime, existingSchedules, currentMinutes, useEDF, useGreedy);
+
             if (slot != null) {
                 // Thêm thông tin về độ ưu tiên vào slot
                 slot.put("priorityScore", priority);
                 suggestions.add(slot);
                 createdCount++;
-                
+
                 // Cập nhật danh sách lịch cố định để tránh trùng lặp
                 addToExistingSchedules(existingSchedules, slot);
             }
-            
+
             // Chuyển sang ngày tiếp theo
             currentDate = currentDate.plusDays(1);
         }
-        
+
         // Sắp xếp kết quả theo ngày và giờ
         suggestions.sort((a, b) -> {
             LocalDate dateA = LocalDate.parse((String) a.get("dayOfWeek"));
             LocalDate dateB = LocalDate.parse((String) b.get("dayOfWeek"));
-            
+
             if (!dateA.equals(dateB)) {
                 return dateA.compareTo(dateB);
             }
-            
+
             // Nếu cùng ngày, sắp xếp theo giờ bắt đầu
             String timeA = (String) a.get("startTime");
             String timeB = (String) b.get("startTime");
             return timeA.compareTo(timeB);
         });
-        
+
         return suggestions;
     }
-    
+
     // Tính toán độ ưu tiên của task dựa trên thuật toán
     private int calculateTaskPriority(Task task, Boolean useEDF, Boolean useGreedy) {
         int priority = 0;
-        
+
         if (useEDF) {
             // EDF: Deadline càng gần thì ưu tiên càng cao
             LocalDate today = LocalDate.now();
             long daysToDeadline = java.time.temporal.ChronoUnit.DAYS.between(today, task.getDeadline());
             priority += (int) (1000 - daysToDeadline); // Deadline gần = điểm cao
         }
-        
+
         if (useGreedy) {
             // Greedy: Priority càng cao thì ưu tiên càng cao
             switch (task.getPriority()) {
@@ -481,62 +486,61 @@ public class FixedScheduleController {
                     break;
             }
         }
-        
+
         return priority;
     }
-    
+
     // Tìm slot trống phù hợp trong một ngày
     private Map<String, Object> findAvailableSlot(
-            LocalDate date, Task task, int taskDuration, int workStartMinutes, 
+            LocalDate date, Task task, int taskDuration, int workStartMinutes,
             int workEndMinutes, int breakTime, List<FixedSchedule> existingSchedules,
             int currentMinutes, Boolean useEDF, Boolean useGreedy) {
-        
+
         // Lấy tất cả lịch cố định trong ngày này
         List<TimeSlot> busySlots = getBusySlotsForDate(date, existingSchedules);
-        
+
         // Tạo danh sách các khoảng thời gian trống
         List<TimeSlot> freeSlots = findFreeSlots(workStartMinutes, workEndMinutes, busySlots);
-        
+
         // Tính tổng thời gian rảnh trong ngày
         int totalFreeTime = 0;
         for (TimeSlot freeSlot : freeSlots) {
             totalFreeTime += freeSlot.endMinutes - freeSlot.startMinutes;
         }
-        
+
         // Kiểm tra xem có đủ thời gian cho task không
         if (totalFreeTime < taskDuration) {
-            System.out.println("Warning: Task '" + task.getTitle() + "' requires " + taskDuration + 
-                             " minutes but only " + totalFreeTime + " minutes available on " + date);
+            System.out.println("Warning: Task '" + task.getTitle() + "' requires " + taskDuration +
+                    " minutes but only " + totalFreeTime + " minutes available on " + date);
             return null; // Không đủ thời gian
         }
-        
+
         // Kiểm tra xem có đủ thời gian cho task không (bao gồm breakTime)
         for (TimeSlot freeSlot : freeSlots) {
             int availableDuration = freeSlot.endMinutes - freeSlot.startMinutes;
             int requiredDuration = taskDuration + breakTime; // Thêm breakTime
-            
+
             // Nếu slot trống đủ lớn cho task + breakTime
             if (availableDuration >= requiredDuration) {
                 // Kiểm tra xem có phải ngày hôm nay và giờ bắt đầu < giờ hiện tại không
                 if (date.equals(LocalDate.now()) && freeSlot.startMinutes < currentMinutes) {
                     continue; // Bỏ qua slot này
                 }
-                
+
                 // Tạo slot cho task (không bao gồm breakTime trong slot)
                 return createScheduleSuggestion(
-                    task, date, freeSlot.startMinutes, freeSlot.startMinutes + taskDuration, 
-                    useEDF, useGreedy
-                );
+                        task, date, freeSlot.startMinutes, freeSlot.startMinutes + taskDuration,
+                        useEDF, useGreedy);
             }
         }
-        
+
         return null; // Không tìm thấy slot phù hợp
     }
-    
+
     // Lấy danh sách các slot bận trong một ngày
     private List<TimeSlot> getBusySlotsForDate(LocalDate date, List<FixedSchedule> existingSchedules) {
         List<TimeSlot> busySlots = new ArrayList<>();
-        
+
         for (FixedSchedule schedule : existingSchedules) {
             if (schedule.getDayOfWeek().equals(date.toString())) {
                 int startMinutes = timeToMinutes(schedule.getStartTime().toString());
@@ -544,40 +548,40 @@ public class FixedScheduleController {
                 busySlots.add(new TimeSlot(startMinutes, endMinutes));
             }
         }
-        
+
         // Sắp xếp theo thời gian bắt đầu
         busySlots.sort((a, b) -> Integer.compare(a.startMinutes, b.startMinutes));
-        
+
         return busySlots;
     }
-    
+
     // Tìm các khoảng thời gian trống
     private List<TimeSlot> findFreeSlots(int workStartMinutes, int workEndMinutes, List<TimeSlot> busySlots) {
         List<TimeSlot> freeSlots = new ArrayList<>();
-        
+
         int currentTime = workStartMinutes;
-        
+
         for (TimeSlot busySlot : busySlots) {
             // Nếu có khoảng trống trước slot bận
             if (currentTime < busySlot.startMinutes) {
                 freeSlots.add(new TimeSlot(currentTime, busySlot.startMinutes));
             }
-            
+
             // Cập nhật thời gian hiện tại (đảm bảo không có overlap)
             currentTime = Math.max(currentTime, busySlot.endMinutes);
         }
-        
+
         // Kiểm tra khoảng trống cuối ngày
         if (currentTime < workEndMinutes) {
             freeSlots.add(new TimeSlot(currentTime, workEndMinutes));
         }
-        
+
         // Sắp xếp theo thời gian bắt đầu để đảm bảo thứ tự tuần tự
         freeSlots.sort((a, b) -> Integer.compare(a.startMinutes, b.startMinutes));
-        
+
         return freeSlots;
     }
-    
+
     // Thêm slot mới vào danh sách lịch cố định (để tránh trùng lặp)
     private void addToExistingSchedules(List<FixedSchedule> existingSchedules, Map<String, Object> newSlot) {
         // Tạo một FixedSchedule giả để đại diện cho slot mới
@@ -585,21 +589,21 @@ public class FixedScheduleController {
         tempSchedule.setDayOfWeek((String) newSlot.get("dayOfWeek"));
         tempSchedule.setStartTime(LocalTime.parse((String) newSlot.get("startTime")));
         tempSchedule.setEndTime(LocalTime.parse((String) newSlot.get("endTime")));
-        
+
         // Thêm vào danh sách (chỉ để tính toán, không lưu vào DB)
         existingSchedules.add(tempSchedule);
-        
+
         // Cũng thêm breakTime slot để tránh task tiếp theo đặt vào khoảng thời gian này
         // (breakTime sẽ được xử lý trong findAvailableSlot)
     }
-    
+
     // Tạo suggestion cho một slot
     private Map<String, Object> createScheduleSuggestion(
-            Task task, LocalDate date, int startMinutes, int endMinutes, 
+            Task task, LocalDate date, int startMinutes, int endMinutes,
             Boolean useEDF, Boolean useGreedy) {
-        
+
         Map<String, Object> suggestion = new HashMap<>();
-        
+
         suggestion.put("taskTitle", task.getTitle());
         suggestion.put("taskDescription", task.getDescription());
         suggestion.put("dayOfWeek", date.toString());
@@ -608,17 +612,17 @@ public class FixedScheduleController {
         suggestion.put("priority", task.getPriority().name());
         suggestion.put("deadline", task.getDeadline().toString());
         suggestion.put("estimatedDuration", endMinutes - startMinutes);
-        suggestion.put("algorithm", useEDF && useGreedy ? "EDF + Greedy" : 
-                     useEDF ? "EDF" : useGreedy ? "Greedy" : "Default");
-        
+        suggestion.put("algorithm",
+                useEDF && useGreedy ? "EDF + Greedy" : useEDF ? "EDF" : useGreedy ? "Greedy" : "Default");
+
         return suggestion;
     }
-    
+
     // Class helper để đại diện cho một khoảng thời gian
     private static class TimeSlot {
         int startMinutes;
         int endMinutes;
-        
+
         TimeSlot(int startMinutes, int endMinutes) {
             this.startMinutes = startMinutes;
             this.endMinutes = endMinutes;
@@ -630,14 +634,14 @@ public class FixedScheduleController {
         String[] parts = time.split(":");
         return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
     }
-    
+
     // Chuyển đổi phút thành thời gian
     private String minutesToTime(int minutes) {
         int hours = minutes / 60;
         int mins = minutes % 60;
         return String.format("%02d:%02d", hours, mins);
     }
-    
+
     // Chuyển đổi String thời gian thành LocalTime
     private LocalTime stringToLocalTime(String timeString) {
         if (timeString == null || timeString.trim().isEmpty()) {
@@ -650,7 +654,7 @@ public class FixedScheduleController {
             return LocalTime.of(0, 0);
         }
     }
-    
+
     // Ước tính thời gian cho task dựa trên priority
     private int estimateTaskDuration(Task task) {
         switch (task.getPriority()) {
@@ -706,21 +710,23 @@ public class FixedScheduleController {
         if (currentUser != null) {
             // Chỉ lấy schedules của user hiện tại
             List<FixedSchedule> schedules = fixedScheduleService.getSchedulesByUser(currentUser);
-            
+
             // Chuyển đổi thành Map để tránh lazy loading
             List<Map<String, Object>> scheduleList = schedules.stream()
-                .map(schedule -> {
-                    Map<String, Object> scheduleMap = new HashMap<>();
-                    scheduleMap.put("id", schedule.getId());
-                    scheduleMap.put("description", schedule.getDescription());
-                    scheduleMap.put("dayOfWeek", schedule.getDayOfWeek());
-                    scheduleMap.put("startTime", schedule.getStartTime() != null ? schedule.getStartTime().toString() : null);
-                    scheduleMap.put("endTime", schedule.getEndTime() != null ? schedule.getEndTime().toString() : null);
-                    scheduleMap.put("color", schedule.getColor());
-                    return scheduleMap;
-                })
-                .toList();
-            
+                    .map(schedule -> {
+                        Map<String, Object> scheduleMap = new HashMap<>();
+                        scheduleMap.put("id", schedule.getId());
+                        scheduleMap.put("description", schedule.getDescription());
+                        scheduleMap.put("dayOfWeek", schedule.getDayOfWeek());
+                        scheduleMap.put("startTime",
+                                schedule.getStartTime() != null ? schedule.getStartTime().toString() : null);
+                        scheduleMap.put("endTime",
+                                schedule.getEndTime() != null ? schedule.getEndTime().toString() : null);
+                        scheduleMap.put("color", schedule.getColor());
+                        return scheduleMap;
+                    })
+                    .toList();
+
             return ResponseEntity.ok(scheduleList);
         } else {
             // Nếu không có user, trả về danh sách rỗng
@@ -743,7 +749,7 @@ public class FixedScheduleController {
     private List<FixedSchedule> createRepeatingSchedules(FixedSchedule originalSchedule, String repeatType) {
         List<FixedSchedule> schedules = new ArrayList<>();
         LocalDate startDate = LocalDate.parse(originalSchedule.getDayOfWeek());
-        
+
         switch (repeatType) {
             case "daily":
                 // Tạo schedule cho 7 ngày tiếp theo
@@ -754,7 +760,7 @@ public class FixedScheduleController {
                     schedules.add(schedule);
                 }
                 break;
-                
+
             case "weekly":
                 // Tạo schedule cho 4 tuần tiếp theo
                 for (int i = 0; i < 4; i++) {
@@ -764,7 +770,7 @@ public class FixedScheduleController {
                     schedules.add(schedule);
                 }
                 break;
-                
+
             case "monthly":
                 // Tạo schedule cho 3 tháng tiếp theo
                 for (int i = 0; i < 3; i++) {
@@ -775,10 +781,10 @@ public class FixedScheduleController {
                 }
                 break;
         }
-        
+
         return schedules;
     }
-    
+
     // Clone schedule object
     private FixedSchedule cloneSchedule(FixedSchedule original) {
         FixedSchedule clone = new FixedSchedule();
