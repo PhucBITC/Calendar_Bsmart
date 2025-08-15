@@ -7,7 +7,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Đăng ký - BSmart Calendar</title>
+                <title>Register - BSmart Calendar</title>
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
                 <style>
@@ -202,12 +202,12 @@
                     <div class="register-card">
                         <div class="register-header">
                             <i class="fas fa-user-plus fa-2x mb-3"></i>
-                            <h2>Đăng ký tài khoản</h2>
-                            <p>Tạo tài khoản để sử dụng B-Smart Calendar</p>
+                            <h2>Create Account</h2>
+                            <p>Create an account to use B-Smart Calendar</p>
                         </div>
 
                         <div class="register-body">
-                            <!-- Thông báo lỗi -->
+                            <!-- Error message -->
                             <c:if test="${not empty errorMessage}">
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <i class="fas fa-exclamation-triangle me-2"></i>
@@ -216,7 +216,7 @@
                                 </div>
                             </c:if>
 
-                            <!-- Form đăng ký -->
+                            <!-- Registration form -->
                             <form:form method="post" action="/auth/register" modelAttribute="registrationDTO"
                                 id="registerForm">
                                 <div class="row">
@@ -227,8 +227,8 @@
                                                     <i class="fas fa-user text-muted"></i>
                                                 </span>
                                                 <form:input path="username" class="form-control" id="username"
-                                                    placeholder="Tên đăng nhập" required="true" minlength="3"
-                                                    maxlength="50" onblur="checkUsername()" autocomplete="username" />
+                                                    placeholder="Username" required="true" minlength="3" maxlength="50"
+                                                    onblur="checkUsername()" autocomplete="username" />
                                             </div>
                                             <div id="usernameValidation" class="validation-message"></div>
                                             <form:errors path="username"
@@ -238,13 +238,12 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                           
                                             <div class="input-group">
                                                 <span class="input-group-text">
                                                     <i class="fas fa-envelope text-muted"></i>
                                                 </span>
                                                 <form:input path="email" type="email" class="form-control" id="email"
-                                                    placeholder="Email của bạn" required="true" onblur="checkEmail()"
+                                                    placeholder="Your email" required="true" onblur="checkEmail()"
                                                     autocomplete="email" />
                                             </div>
                                             <div id="emailValidation" class="validation-message"></div>
@@ -255,13 +254,12 @@
                                 </div>
 
                                 <div class="form-group">
-                                   
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <i class="fas fa-id-card text-muted"></i>
                                         </span>
                                         <form:input path="fullName" class="form-control" id="fullName"
-                                            placeholder="Họ và tên của bạn" autocomplete="name" />
+                                            placeholder="Full name" autocomplete="name" />
                                     </div>
                                     <form:errors path="fullName" cssClass="text-danger validation-message d-block" />
                                 </div>
@@ -272,7 +270,7 @@
                                             <i class="fas fa-phone text-muted"></i>
                                         </span>
                                         <form:input path="phoneNumber" class="form-control" id="phoneNumber"
-                                            placeholder="Số điện thoại" autocomplete="tel" />
+                                            placeholder="Phone number" autocomplete="tel" />
                                     </div>
                                     <form:errors path="phoneNumber" cssClass="text-danger validation-message d-block" />
                                 </div>
@@ -285,7 +283,7 @@
                                                     <i class="fas fa-lock text-muted"></i>
                                                 </span>
                                                 <form:password path="password" class="form-control" id="password"
-                                                    placeholder="Mật khẩu" required="true" minlength="6"
+                                                    placeholder="Password" required="true" minlength="6"
                                                     onkeyup="checkPasswordStrength()" autocomplete="new-password" />
                                             </div>
                                             <div id="passwordStrength" class="password-strength"></div>
@@ -301,7 +299,7 @@
                                                     <i class="fas fa-lock text-muted"></i>
                                                 </span>
                                                 <form:password path="confirmPassword" class="form-control"
-                                                    id="confirmPassword" placeholder="Xác nhận mật khẩu" required="true"
+                                                    id="confirmPassword" placeholder="Confirm password" required="true"
                                                     onkeyup="checkPasswordMatch()" autocomplete="new-password" />
                                             </div>
                                             <div id="passwordMatch" class="validation-message"></div>
@@ -313,18 +311,18 @@
 
                                 <button type="submit" class="btn btn-register" id="submitBtn">
                                     <span id="submitText">
-                                        <i class="fas fa-user-plus me-2"></i>Đăng ký tài khoản
+                                        <i class="fas fa-user-plus me-2"></i>Register
                                     </span>
                                     <span id="submitLoading" class="d-none">
-                                        <span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...
+                                        <span class="spinner-border spinner-border-sm me-2"></span>Processing...
                                     </span>
                                 </button>
                             </form:form>
                         </div>
 
                         <div class="register-footer">
-                            <p class="mb-0">Đã có tài khoản?
-                                <a href="/auth/login">Đăng nhập ngay</a>
+                            <p class="mb-0">Already have an account?
+                                <a href="/auth/login">Login now</a>
                             </p>
                         </div>
                     </div>
@@ -348,7 +346,7 @@
                         const usernameInput = document.getElementById('username');
 
                         if (username.length < 3) {
-                            validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Tên đăng nhập phải có ít nhất 3 ký tự';
+                            validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Username must be at least 3 characters';
                             usernameInput.classList.add('is-invalid');
                             usernameInput.classList.remove('is-valid');
                             return;
@@ -358,17 +356,17 @@
                             .then(response => response.json())
                             .then(exists => {
                                 if (exists) {
-                                    validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Tên đăng nhập đã tồn tại';
+                                    validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Username already exists';
                                     usernameInput.classList.add('is-invalid');
                                     usernameInput.classList.remove('is-valid');
                                 } else {
-                                    validationDiv.innerHTML = '<i class="fas fa-check text-success"></i> Tên đăng nhập có thể sử dụng';
+                                    validationDiv.innerHTML = '<i class="fas fa-check text-success"></i> Username is available';
                                     usernameInput.classList.add('is-valid');
                                     usernameInput.classList.remove('is-invalid');
                                 }
                             })
                             .catch(error => {
-                                validationDiv.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> Không thể kiểm tra tên đăng nhập';
+                                validationDiv.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> Cannot check username';
                             });
                     }
 
@@ -379,7 +377,7 @@
                         const emailInput = document.getElementById('email');
 
                         if (!email || !email.includes('@')) {
-                            validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Email không đúng định dạng';
+                            validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Invalid email format';
                             emailInput.classList.add('is-invalid');
                             emailInput.classList.remove('is-valid');
                             return;
@@ -389,17 +387,17 @@
                             .then(response => response.json())
                             .then(exists => {
                                 if (exists) {
-                                    validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Email đã được sử dụng';
+                                    validationDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Email is already used';
                                     emailInput.classList.add('is-invalid');
                                     emailInput.classList.remove('is-valid');
                                 } else {
-                                    validationDiv.innerHTML = '<i class="fas fa-check text-success"></i> Email có thể sử dụng';
+                                    validationDiv.innerHTML = '<i class="fas fa-check text-success"></i> Email is available';
                                     emailInput.classList.add('is-valid');
                                     emailInput.classList.remove('is-invalid');
                                 }
                             })
                             .catch(error => {
-                                validationDiv.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> Không thể kiểm tra email';
+                                validationDiv.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> Cannot check email';
                             });
                     }
 
@@ -424,14 +422,14 @@
                             case 0:
                             case 1:
                             case 2:
-                                strengthDiv.innerHTML = '<span class="strength-weak"><i class="fas fa-circle"></i> Mật khẩu yếu</span>';
+                                strengthDiv.innerHTML = '<span class="strength-weak"><i class="fas fa-circle"></i> Weak password</span>';
                                 break;
                             case 3:
                             case 4:
-                                strengthDiv.innerHTML = '<span class="strength-medium"><i class="fas fa-circle"></i> Mật khẩu trung bình</span>';
+                                strengthDiv.innerHTML = '<span class="strength-medium"><i class="fas fa-circle"></i> Medium password</span>';
                                 break;
                             case 5:
-                                strengthDiv.innerHTML = '<span class="strength-strong"><i class="fas fa-circle"></i> Mật khẩu mạnh</span>';
+                                strengthDiv.innerHTML = '<span class="strength-strong"><i class="fas fa-circle"></i> Strong password</span>';
                                 break;
                         }
                     }
@@ -450,11 +448,11 @@
                         }
 
                         if (password === confirmPassword) {
-                            matchDiv.innerHTML = '<i class="fas fa-check text-success"></i> Mật khẩu khớp nhau';
+                            matchDiv.innerHTML = '<i class="fas fa-check text-success"></i> Passwords match';
                             confirmInput.classList.add('is-valid');
                             confirmInput.classList.remove('is-invalid');
                         } else {
-                            matchDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Mật khẩu không khớp';
+                            matchDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Passwords do not match';
                             confirmInput.classList.add('is-invalid');
                             confirmInput.classList.remove('is-valid');
                         }

@@ -2,18 +2,17 @@
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
             <!DOCTYPE html>
-            <html lang="vi">
+            <html lang="en">
 
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Đăng nhập - BSmart Calendar</title>
+                <title>Login - BSmart Calendar</title>
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
                 <style>
                     body {
                         background: linear-gradient(135deg, #0a9b7700 0%, #46ebaf 100%);
-
                         min-height: 100vh;
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     }
@@ -155,12 +154,12 @@
                     <div class="login-card">
                         <div class="login-header">
                             <i class="fas fa-calendar-alt fa-2x mb-3"></i>
-                            <h2>Đăng nhập</h2>
-                            <p>Chào mừng trở lại với BSmart Calendar</p>
+                            <h2>Login</h2>
+                            <p>Welcome back to B-Smart Calendar</p>
                         </div>
 
                         <div class="login-body">
-                            <!-- Thông báo lỗi -->
+                            <!-- Error message -->
                             <c:if test="${not empty errorMessage}">
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <i class="fas fa-exclamation-triangle me-2"></i>
@@ -169,7 +168,7 @@
                                 </div>
                             </c:if>
 
-                            <!-- Thông báo thành công -->
+                            <!-- Success message -->
                             <c:if test="${not empty successMessage}">
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                                     <i class="fas fa-check-circle me-2"></i>
@@ -178,7 +177,7 @@
                                 </div>
                             </c:if>
 
-                            <!-- Form đăng nhập -->
+                            <!-- Login form -->
                             <form:form method="post" action="${pageContext.request.contextPath}/auth/login"
                                 modelAttribute="loginDTO">
                                 <div class="form-group">
@@ -187,7 +186,7 @@
                                             <i class="fas fa-user text-muted"></i>
                                         </span>
                                         <form:input path="username" class="form-control" id="username"
-                                            placeholder="Nhập tên đăng nhập hoặc email" required="true"
+                                            placeholder="Enter username or email" required="true"
                                             autocomplete="username" />
                                     </div>
                                     <form:errors path="username" cssClass="text-danger small mt-1 d-block" />
@@ -199,7 +198,7 @@
                                             <i class="fas fa-lock text-muted"></i>
                                         </span>
                                         <form:password path="password" class="form-control" id="password"
-                                            placeholder="Nhập mật khẩu" required="true"
+                                            placeholder="Enter password" required="true"
                                             autocomplete="current-password" />
                                     </div>
                                     <form:errors path="password" cssClass="text-danger small mt-1 d-block" />
@@ -208,19 +207,19 @@
                                 <div class="remember-me">
                                     <form:checkbox path="rememberMe" class="form-check-input" id="rememberMe" />
                                     <label class="form-check-label" for="rememberMe">
-                                        Ghi nhớ đăng nhập
+                                        Remember me
                                     </label>
                                 </div>
 
                                 <button type="submit" class="btn btn-login">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login
                                 </button>
                             </form:form>
                         </div>
 
                         <div class="login-footer">
-                            <p class="mb-0">Chưa có tài khoản?
-                                <a href="/auth/register">Đăng ký ngay</a>
+                            <p class="mb-0">Don't have an account?
+                                <a href="/auth/register">Register now</a>
                             </p>
                         </div>
                     </div>
