@@ -22,6 +22,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/auth")
@@ -113,7 +116,7 @@ public class AuthController {
         if (userOpt.isPresent() && userService.checkPassword(userOpt.get(), loginDTO.getPassword())) {
             User user = userOpt.get();
             request.getSession().setAttribute("currentUser", user);
-            return "redirect:/client/schedule/add"; // redirect vào lichmoi.jsp
+            return "redirect:/schedule/add"; // Sửa đường dẫn đúng
         } else {
             model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng!");
             return "client/auth/login";
@@ -189,5 +192,26 @@ public class AuthController {
     @ResponseBody
     public boolean checkEmail(@RequestParam String email) {
         return userService.existsByEmail(email);
+    }
+
+    /**
+     * API lấy thông tin user hiện tại
+     */
+    @GetMapping("/api/current-user")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getCurrentUser(HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute("currentUser");
+        if (currentUser != null) {
+            // Trả về thông tin user đơn giản để tránh lazy loading
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("id", currentUser.getId());
+            userData.put("username", currentUser.getUsername());
+            userData.put("email", currentUser.getEmail());
+            userData.put("fullName", currentUser.getFullName());
+            userData.put("role", currentUser.getRole());
+            return ResponseEntity.ok(userData);
+        } else {
+            return ResponseEntity.status(401).build(); // Unauthorized
+        }
     }
 }

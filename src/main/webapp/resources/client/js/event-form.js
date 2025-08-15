@@ -36,7 +36,7 @@ export function initEventForm(toaster) {
           id: savedEvent.id, // ID thật từ database
           title: savedEvent.description,
           description: savedEvent.description,
-          date: new Date(formEvent.date),
+          date: new Date(savedEvent.dayOfWeek), // Sử dụng dayOfWeek từ server
           startTime: savedEvent.startTime,
           endTime: savedEvent.endTime,
           color: savedEvent.color,
@@ -62,16 +62,11 @@ export function initEventForm(toaster) {
 
         toaster.success("Schedule saved successfully!");
         
-        // Close dialog và redirect
+        // Close dialog
         const dialog = formElement.closest('[data-dialog]');
         if (dialog) {
           dialog.close();
         }
-        
-        // Refresh page để hiển thị data mới
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
 
       } else {
         toaster.error(result.message || "Error saving schedule");

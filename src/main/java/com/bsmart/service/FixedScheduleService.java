@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import com.bsmart.domain.User;
 
 /**
  * Service xử lý lịch cố định và lập lịch tự động dựa trên thuật toán:
@@ -32,6 +33,11 @@ public class FixedScheduleService {
     // Lấy tất cả lịch học cố định
     public List<FixedSchedule> getAllSchedules() {
         return fixedScheduleRepository.findAll();
+    }
+
+    // Lấy lịch theo user
+    public List<FixedSchedule> getSchedulesByUser(User user) {
+        return fixedScheduleRepository.findByUser(user);
     }
 
     // FixedScheduleService.java

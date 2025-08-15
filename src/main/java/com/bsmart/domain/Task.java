@@ -75,6 +75,14 @@ public class Task {
         this.createdAt = createdAt;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     // Enum cho ưu tiên
     public enum Priority {
         HIGH, MEDIUM, LOW

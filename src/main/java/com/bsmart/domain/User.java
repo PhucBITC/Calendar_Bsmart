@@ -1,5 +1,6 @@
 package com.bsmart.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -50,9 +51,11 @@ public class User {
     private LocalDateTime updatedAt;
     
     // Quan hệ với Task và FixedSchedule
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks;
     
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FixedSchedule> fixedSchedules;
     

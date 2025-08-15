@@ -24,10 +24,14 @@ export function initEventStore() {
     if (deletedEvent.id) {
       try {
         const response = await fetch(`/schedule/api/delete/${deletedEvent.id}`, {
-          method: 'DELETE'
+          method: 'POST'
         });
         const result = await response.json();
         console.log("Server delete result:", result);
+        
+        if (!result.success) {
+          console.error("Server delete failed:", result.message);
+        }
       } catch (error) {
         console.error("Error deleting from server:", error);
       }
@@ -104,10 +108,11 @@ async function syncFromServer() {
       id: schedule.id,
       title: schedule.description,
       description: schedule.description,
-      date: new Date(schedule.dayOfWeek), // Assuming dayOfWeek contains date string
+      date: new Date(schedule.dayOfWeek), // Sử dụng dayOfWeek từ server
       startTime: schedule.startTime,
       endTime: schedule.endTime,
-      color: schedule.color
+      color: schedule.color,
+      dayOfWeek: schedule.dayOfWeek
     }));
     
     console.log("Synced events from server:", events);
