@@ -118,6 +118,17 @@ public class AdminController {
             users = userRepository.findAll();
         }
         
+        // Debug logging
+        System.out.println("=== DEBUG USER LIST ===");
+        System.out.println("Total users from database: " + users.size());
+        System.out.println("Search parameter: " + search);
+        System.out.println("Role parameter: " + role);
+        System.out.println("Status parameter: " + status);
+        for (User user : users) {
+            System.out.println("User: " + user.getUsername() + " | " + user.getEmail() + " | " + user.getRole() + " | Active: " + user.isActive());
+        }
+        System.out.println("=======================");
+        
         model.addAttribute("users", users);
         return "admin/users/list";
     }

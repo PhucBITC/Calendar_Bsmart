@@ -556,7 +556,7 @@
                 <nav class="sidebar-nav">
                     <div class="nav-section">
                         <h3>Main Management</h3>
-                        <a href="/admin/dashboard" class="nav-item active">
+                        <a href="/admin" class="nav-item active">
                             <i>📊</i>Dashboard
                         </a>
                         <a href="/admin/users" class="nav-item">
@@ -570,25 +570,14 @@
                         </a>
                     </div>
 
+
                     <div class="nav-section">
-                        <h3>Reports</h3>
-                        <a href="/admin/reports" class="nav-item">
-                            <i>📈</i>Statistics Report
-                        </a>
-                        <a href="/admin/analytics" class="nav-item">
-                            <i>📊</i>Data Analytics
+                        <h3>Information</h3>
+                        <a href="/auth/logout" class="nav-item">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
                         </a>
                     </div>
 
-                    <div class="nav-section">
-                        <h3>System</h3>
-                        <a href="/admin/settings" class="nav-item">
-                            <i>⚙️</i>Settings
-                        </a>
-                        <a href="/admin/logs" class="nav-item">
-                            <i>📝</i>System Logs
-                        </a>
-                    </div>
                 </nav>
             </div>
 

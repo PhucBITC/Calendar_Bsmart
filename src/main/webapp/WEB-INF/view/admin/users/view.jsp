@@ -694,15 +694,29 @@
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Created:</span>
-                                <span class="info-value">
-                                    <fmt:formatDate value="${user.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
-                                </span>
+                                                                 <span class="info-value">
+                                     <c:choose>
+                                         <c:when test="${user.createdAt != null}">
+                                             ${user.createdAt}
+                                         </c:when>
+                                         <c:otherwise>
+                                             N/A
+                                         </c:otherwise>
+                                     </c:choose>
+                                 </span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Last Updated:</span>
-                                <span class="info-value">
-                                    <fmt:formatDate value="${user.updatedAt}" pattern="dd/MM/yyyy HH:mm"/>
-                                </span>
+                                                                 <span class="info-value">
+                                     <c:choose>
+                                         <c:when test="${user.updatedAt != null}">
+                                             ${user.updatedAt}
+                                         </c:when>
+                                         <c:otherwise>
+                                             N/A
+                                         </c:otherwise>
+                                     </c:choose>
+                                 </span>
                             </div>
                         </div>
                     </div>
