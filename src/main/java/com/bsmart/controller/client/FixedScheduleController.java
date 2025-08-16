@@ -40,6 +40,12 @@ public class FixedScheduleController {
         return "client/schedule/lichmoi";
     }
 
+     // Hiển thị trang giới thiệu
+    @GetMapping("/page")
+    public String showAddFor(Model model) {
+        return "client/schedule/page";
+    }
+    
     // Lưu hoặc cập nhật lịch (Web form - redirect)
     @PostMapping("/save")
     public String save(@ModelAttribute FixedSchedule schedule, HttpServletRequest request) {

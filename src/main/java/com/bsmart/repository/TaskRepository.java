@@ -11,4 +11,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     // Tìm tasks theo user
     List<Task> findByUser(User user);
+    
+    // Đếm số lượng tasks của user
+    long countByUser(User user);
 }

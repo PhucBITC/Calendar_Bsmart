@@ -12,5 +12,8 @@ public interface FixedScheduleRepository extends JpaRepository<FixedSchedule, Lo
     // Tìm schedules theo user
     List<FixedSchedule> findByUser(User user);
     
+    // Đếm số lượng schedules của user
+    long countByUser(User user);
+    
     // Bạn có thể thêm custom query sau nếu cần, ví dụ tìm theo thứ trong tuần, v.v.
 }
