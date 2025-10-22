@@ -22,9 +22,14 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status = TaskStatus.PENDING; // mặc định trạng thái
+
     private LocalDate deadline;
 
     private LocalDate createdAt = LocalDate.now(); // mặc định ngày tạo
+    
+    private LocalDate updatedAt = LocalDate.now(); // ngày cập nhật
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -103,8 +108,29 @@ public class Task {
         this.user = user;
     }
 
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     // Enum cho ưu tiên
     public enum Priority {
         HIGH, MEDIUM, LOW
+    }
+
+    // Enum cho trạng thái
+    public enum TaskStatus {
+        PENDING, IN_PROGRESS, COMPLETED
     }
 }

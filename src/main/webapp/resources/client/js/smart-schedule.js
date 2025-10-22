@@ -4,12 +4,12 @@ import { initToaster } from "./toaster.js";
 export function initSmartSchedule() {
   const dialog = initDialog("smart-schedule");
   const toaster = initToaster(dialog.dialogElement);
-  
+
   const generateBtn = document.getElementById("generate-schedule-btn");
   const applyBtn = document.getElementById("apply-schedule-btn");
   const resultDiv = document.getElementById("smart-schedule-result");
   const suggestionsDiv = document.getElementById("schedule-suggestions");
-  
+
   let generatedSchedules = [];
 
   // Set default deadline to today + 7 days
@@ -21,7 +21,7 @@ export function initSmartSchedule() {
   // Handle smart schedule button click
   document.addEventListener("smart-schedule-request", () => {
     dialog.open();
-    
+
     // Re-initialize button after dialog opens
     setTimeout(() => {
       const generateBtn = document.getElementById("generate-schedule-btn");
@@ -36,21 +36,21 @@ export function initSmartSchedule() {
   // Handle generate schedule button click
   generateBtn.addEventListener("click", async () => {
     console.log("Generate button clicked!"); // Debug log
-    
+
     // Lấy form data thủ công thay vì dùng FormData
     const formFields = dialog.dialogElement.querySelector(".form__fields");
-    
+
     // Validate required fields
     const taskTitle = formFields.querySelector("#task-title").value;
     const taskDeadline = formFields.querySelector("#task-deadline").value;
-    
+
     console.log("Form data:", { taskTitle, taskDeadline }); // Debug log
-    
+
     if (!taskTitle || !taskDeadline) {
       toaster.error("Vui lòng nhập đầy đủ thông tin bắt buộc");
       return;
     }
-    
+
     const params = {
       taskTitle: taskTitle,
       taskDescription: formFields.querySelector("#task-description").value,
@@ -133,7 +133,7 @@ export function initSmartSchedule() {
           });
 
           const taskResult = await taskResponse.json();
-          
+
           if (taskResult.success) {
             // Sau đó tạo schedule
             const scheduleFormData = new FormData();
@@ -163,7 +163,7 @@ export function initSmartSchedule() {
 
             const scheduleResult = await scheduleResponse.json();
             console.log("Schedule creation result:", scheduleResult);
-            
+
             if (scheduleResult.success) {
               successCount++;
             } else {
@@ -182,22 +182,22 @@ export function initSmartSchedule() {
         if (errorCount > 0) {
           toaster.error(`${errorCount} lịch trình bị lỗi`);
         }
-        
+
         // Close dialog and refresh calendar
         dialog.close();
-        
+
         // Force refresh calendar data
         setTimeout(() => {
           // Dispatch multiple events to ensure calendar updates
           document.dispatchEvent(new CustomEvent("events-change", { bubbles: true }));
           document.dispatchEvent(new CustomEvent("calendar-refresh", { bubbles: true }));
-          
+
           // Also try to sync from server
           const eventStore = window.eventStore;
           if (eventStore && typeof eventStore.syncFromServer === 'function') {
             eventStore.syncFromServer();
           }
-          
+
           // If still not visible, reload page after 2 seconds
           setTimeout(() => {
             console.log("Reloading page to show new schedules...");
@@ -227,7 +227,7 @@ export function initSmartSchedule() {
 
 function displaySuggestions(schedules) {
   const suggestionsDiv = document.getElementById("schedule-suggestions");
-  
+
   if (schedules.length === 0) {
     suggestionsDiv.innerHTML = `
       <div style="text-align: center; padding: 2rem; color: #64748b;">

@@ -5,6 +5,8 @@ import com.bsmart.repository.TaskRepository;
 import com.bsmart.repository.FixedScheduleRepository;
 import com.bsmart.domain.User;
 import com.bsmart.domain.UserRole;
+import com.bsmart.domain.Task;
+import com.bsmart.domain.Task.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -303,5 +306,196 @@ public class AdminController {
         }
     }
     
-    // Thêm các mapping cho quản lý task, schedule ở đây
+    // ==================== TASK MANAGEMENT ====================
+    
+    @GetMapping("/tasks")
+    public String listTasks(Model model, 
+                          @RequestParam(required = false) String search,
+                          @RequestParam(required = false) String status,
+                          @RequestParam(required = false) String priority) {
+        
+        List<Task> tasks;
+        
+        // Nếu có tham số tìm kiếm hoặc lọc
+        if ((search != null && !search.trim().isEmpty()) || 
+            (status != null && !status.trim().isEmpty()) || 
+            (priority != null && !priority.trim().isEmpty())) {
+            
+            tasks = taskRepository.findAll().stream()
+                .filter(task -> {
+                    // Lọc theo tìm kiếm
+                    if (search != null && !search.trim().isEmpty()) {
+                        String searchLower = search.toLowerCase();
+                        boolean matchesSearch = task.getTitle().toLowerCase().contains(searchLower) ||
+                                              (task.getDescription() != null && task.getDescription().toLowerCase().contains(searchLower)) ||
+                                              (task.getUser() != null && task.getUser().getUsername().toLowerCase().contains(searchLower));
+                        if (!matchesSearch) return false;
+                    }
+                    
+                    // Lọc theo status
+                    if (status != null && !status.trim().isEmpty()) {
+                        if (!task.getStatus().name().equalsIgnoreCase(status)) return false;
+                    }
+                    
+                    // Lọc theo priority
+                    if (priority != null && !priority.trim().isEmpty()) {
+                        if (!task.getPriority().name().equalsIgnoreCase(priority)) return false;
+                    }
+                    
+                    return true;
+                })
+                .toList();
+        } else {
+            tasks = taskRepository.findAll();
+        }
+        
+        // Debug logging
+        System.out.println("=== DEBUG TASK LIST ===");
+        System.out.println("Total tasks from database: " + tasks.size());
+        System.out.println("Search parameter: " + search);
+        System.out.println("Status parameter: " + status);
+        System.out.println("Priority parameter: " + priority);
+        for (Task task : tasks) {
+            System.out.println("Task: " + task.getTitle() + " | " + task.getStatus() + " | " + task.getPriority());
+        }
+        System.out.println("=======================");
+        
+        model.addAttribute("tasks", tasks);
+        return "admin/tasks/list";
+    }
+    
+    @GetMapping("/tasks/add")
+    public String addTaskForm(Model model) {
+        model.addAttribute("task", new Task());
+        model.addAttribute("users", userRepository.findAll());
+        return "admin/tasks/add";
+    }
+    
+    @PostMapping("/tasks/add")
+    public String addTask(@ModelAttribute Task task, RedirectAttributes redirectAttributes) {
+        try {
+            // Set default values
+            task.setCreatedAt(LocalDate.now());
+            task.setUpdatedAt(LocalDate.now());
+            
+            taskRepository.save(task);
+            redirectAttributes.addFlashAttribute("success", "Thêm công việc thành công!");
+            return "redirect:/admin/tasks";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            return "redirect:/admin/tasks/add";
+        }
+    }
+    
+    @GetMapping("/tasks/edit/{id}")
+    public String editTaskForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Task> taskOpt = taskRepository.findById(id);
+        if (taskOpt.isPresent()) {
+            model.addAttribute("task", taskOpt.get());
+            model.addAttribute("users", userRepository.findAll());
+            return "admin/tasks/edit";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy công việc!");
+            return "redirect:/admin/tasks";
+        }
+    }
+    
+    @PostMapping("/tasks/edit/{id}")
+    public String editTask(@PathVariable Long id, @ModelAttribute Task task, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<Task> existingTaskOpt = taskRepository.findById(id);
+            if (!existingTaskOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy công việc!");
+                return "redirect:/admin/tasks";
+            }
+            
+            Task existingTask = existingTaskOpt.get();
+            
+            // Cập nhật thông tin
+            existingTask.setTitle(task.getTitle());
+            existingTask.setDescription(task.getDescription());
+            existingTask.setStatus(task.getStatus());
+            existingTask.setPriority(task.getPriority());
+            existingTask.setDeadline(task.getDeadline());
+            existingTask.setUser(task.getUser());
+            existingTask.setUpdatedAt(LocalDate.now());
+            
+            taskRepository.save(existingTask);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật công việc thành công!");
+            return "redirect:/admin/tasks";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            return "redirect:/admin/tasks/edit/" + id;
+        }
+    }
+    
+    @GetMapping("/tasks/view/{id}")
+    public String viewTask(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Task> taskOpt = taskRepository.findById(id);
+        if (taskOpt.isPresent()) {
+            Task task = taskOpt.get();
+            model.addAttribute("task", task);
+            return "admin/tasks/view";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy công việc!");
+            return "redirect:/admin/tasks";
+        }
+    }
+    
+    @PostMapping("/tasks/delete/{id}")
+    public String deleteTask(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<Task> taskOpt = taskRepository.findById(id);
+            if (!taskOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy công việc!");
+                return "redirect:/admin/tasks";
+            }
+            
+            Task task = taskOpt.get();
+            taskRepository.delete(task);
+            redirectAttributes.addFlashAttribute("success", "Xóa công việc thành công!");
+            return "redirect:/admin/tasks";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            return "redirect:/admin/tasks";
+        }
+    }
+    
+    @PostMapping("/tasks/toggle-status/{id}")
+    public String toggleTaskStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<Task> taskOpt = taskRepository.findById(id);
+            if (!taskOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy công việc!");
+                return "redirect:/admin/tasks";
+            }
+            
+            Task task = taskOpt.get();
+            // Toggle status: PENDING -> IN_PROGRESS -> COMPLETED -> PENDING
+            switch (task.getStatus()) {
+                case PENDING:
+                    task.setStatus(TaskStatus.IN_PROGRESS);
+                    break;
+                case IN_PROGRESS:
+                    task.setStatus(TaskStatus.COMPLETED);
+                    break;
+                case COMPLETED:
+                    task.setStatus(TaskStatus.PENDING);
+                    break;
+            }
+            task.setUpdatedAt(LocalDate.now());
+            
+            taskRepository.save(task);
+            
+            redirectAttributes.addFlashAttribute("success", "Cập nhật trạng thái công việc thành công!");
+            return "redirect:/admin/tasks";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            return "redirect:/admin/tasks";
+        }
+    }
 }

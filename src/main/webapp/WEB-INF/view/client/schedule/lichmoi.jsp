@@ -9,33 +9,30 @@
             <link rel="stylesheet" href="/client/css/index.css" />
             <link rel="canonical" href="http://localhost:8082/client/manifest.webmanifest" />
             <script src="/client/js/index.js" type="module"></script>
-            <title>Vanilla Calendar | Responsive App with HTML, CSS & JavaScript - Mateusz Ziomek</title>
-            <meta name="description"
-                content="Vanilla Calendar is a fully responsive calendar app built with HTML, CSS, and JavaScript. Create, manage, and view events in real-time, all built from scratch without libraries or frameworks." />
+            <title> B-Smart</title>
+      
             <link rel="manifest" href="http://localhost:8082/client/manifest.webmanifest">
             <meta name="author" content="Mateusz Ziomek">
             <meta name="robots" content="index, follow">
             <meta property="og:type" content="website">
             <meta property="og:title"
-                content="Vanilla Calendar | Responsive App with HTML, CSS & JavaScript - Mateusz Ziomek">
+                content=" Responsive App with HTML, CSS & JavaScript ">
             <meta property="og:description"
-                content="Vanilla Calendar is a fully responsive calendar app built with HTML, CSS, and JavaScript. Create, manage, and view events in real-time, all built from scratch without libraries or frameworks.">
+                content=" is a fully responsive calendar app built with HTML, CSS, and JavaScript. Create, manage, and view events in real-time, all built from scratch without libraries or frameworks.">
             <meta property="og:url" content="https://vanilla-calendar.mateuszziomekit.com">
             <meta property="og:image" content="https://vanilla-calendar.mateuszziomekit.com/thumbnail.jpg">
-            <meta property="og:image:width" content="1280">
+
             <meta property="og:image:height" content="720">
             <meta property="og:image:type" content="image/jpeg">
             <meta property="og:image:alt"
-                content="A thumbnail of a Vanilla Calendar Youtube video, containing the mobile and the desktop view.">
+                content="A thumbnail of a  Youtube video, containing the mobile and the desktop view.">
             <meta name="twitter:card" content="summary_large_image">
             <meta name="twitter:creator" content="@mateuszziomekit">
-            <meta name="twitter:title"
-                content="Vanilla Calendar | Responsive App with HTML, CSS & JavaScript - Mateusz Ziomek">
             <meta name="twitter:description"
-                content="Vanilla Calendar is a fully responsive calendar app built with HTML, CSS, and JavaScript. Create, manage, and view events in real-time, all built from scratch without libraries or frameworks.">
+                content=" is a fully responsive calendar app built with HTML, CSS, and JavaScript. Create, manage, and view events in real-time, all built from scratch without libraries or frameworks.">
             <meta name="twitter:image" content="https://vanilla-calendar.mateuszziomekit.com/thumbnail.jpg">
             <meta name="twitter:image:alt"
-                content="A thumbnail of a Vanilla Calendar Youtube video, containing the mobile and the desktop view.">
+                content="A thumbnail of a  Youtube video, containing the mobile and the desktop view.">
         </head>
 
         <body>

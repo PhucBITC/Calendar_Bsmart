@@ -845,7 +845,7 @@
                                     <i>📋</i>Task Management
                                 </a>
                                 <a href="/admin/schedules" class="nav-item">
-                                    <i>📅</i>Schedule Management
+
                                 </a>
                             </div>
 

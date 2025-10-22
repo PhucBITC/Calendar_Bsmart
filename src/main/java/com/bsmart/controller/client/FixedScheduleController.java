@@ -40,12 +40,12 @@ public class FixedScheduleController {
         return "client/schedule/lichmoi";
     }
 
-     // Hiển thị trang giới thiệu
+    // Hiển thị trang giới thiệu
     @GetMapping("/page")
     public String showAddFor(Model model) {
         return "client/schedule/page";
     }
-    
+
     // Lưu hoặc cập nhật lịch (Web form - redirect)
     @PostMapping("/save")
     public String save(@ModelAttribute FixedSchedule schedule, HttpServletRequest request) {
@@ -282,12 +282,10 @@ public class FixedScheduleController {
             String startHour = (String) request.get("startHour");
             String endHour = (String) request.get("endHour");
             Integer breakTime = (Integer) request.get("breakTime");
-            
 
             System.out.println("Parsed parameters:");
             System.out.println("- taskTitle: " + taskTitle);
             System.out.println("- taskDeadline: " + taskDeadline);
-          
 
             // Tạo task object để sử dụng trong thuật toán
             Task task = new Task();
@@ -302,7 +300,7 @@ public class FixedScheduleController {
 
             // Sinh lịch dựa trên thông tin task
             List<Map<String, Object>> scheduleSuggestions = generateTaskBasedSchedule(
-                    task, repeatCount, startHour, endHour, breakTime, true , true);
+                    task, repeatCount, startHour, endHour, breakTime, true, true);
 
             System.out.println("Generated " + scheduleSuggestions.size() + " suggestions");
 

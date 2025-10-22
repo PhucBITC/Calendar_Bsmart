@@ -10,7 +10,24 @@ License: https://freebootstrap.net/license
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Nova Free Bootstrap Template for Agency &mdash; by FreeBootstrap.net </title>
+  <title> B-Smart</title>
+  <link rel="apple-touch-icon" sizes="57x57" href="/client/image/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/client/image/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/client/image/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/client/image/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/client/image/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/client/image/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/client/image/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/client/image/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/client/image/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/client/image/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/client/image/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/client/image/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/client/image/favicon-16x16.png">
+  <link rel="manifest" href="/client/image/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
 
   <!-- ======= Google Font =======-->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,7 +130,8 @@ License: https://freebootstrap.net/license
         <div class="ms-auto w-auto">
 
 
-          <div class="header-social d-flex align-items-center gap-1"><a class="btn btn-primary py-2" href="/auth/login">Get
+          <div class="header-social d-flex align-items-center gap-1"><a class="btn btn-primary py-2"
+              href="/auth/login">Get
               Started</a>
 
             <button class="fbs__net-navbar-toggler justify-content-center align-items-center ms-auto"
@@ -361,7 +379,7 @@ License: https://freebootstrap.net/license
               <div class="testimonial rounded-4 p-4">
                 <blockquote class="mb-3">
                   &ldquo;
-                  I’m impressed with B-Smart Calendar’s security and data backup features. Managing my schedule has
+                  I'm impressed with B-Smart Calendar's security and data backup features. Managing my schedule has
                   never been this safe and convenient.
                   &rdquo;
                 </blockquote>
@@ -415,8 +433,8 @@ License: https://freebootstrap.net/license
                 data-aos="fade-up" data-aos-delay="0">Contact</span>
               <h2 class="h2 fw-bold mb-3" data-aos="fade-up" data-aos-delay="0">Contact Us</h2>
               <p data-aos="fade-up" data-aos-delay="100">Have questions or suggestions? Our team is here to help you get
-                the most out of B-Smart Calendar.
-                Whether it’s feedback, feature requests, or support—reach out to us anytime and we’ll respond promptly.
+                the most out of B-Smart Calendar. Whether it's feedback, feature requests, or support reach out to us
+                anytime and we'll respond promptly.
               </p>
             </div>
           </div>
@@ -482,7 +500,7 @@ License: https://freebootstrap.net/license
           <div class="row mb-5 pb-4">
             <div class="col-md-7">
               <h2 class="fs-5">Join our newsletter</h2>
-              <p>Stay updated with our latest tips, features, and updates—subscribe to the B-Smart Calendar newsletter
+              <p>Stay updated with our latest tips, features, and update subscribe to the B-Smart Calendar newsletter
                 today!</p>
             </div>
             <div class="col-md-5">
