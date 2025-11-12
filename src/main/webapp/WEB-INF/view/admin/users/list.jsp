@@ -829,7 +829,9 @@
                     <!-- Sidebar -->
                     <div class="admin-sidebar" id="adminSidebar">
                         <div class="sidebar-header">
-                            <h2>B-Smart</h2>
+                            <h2>
+                                <a class="logoCalendar" href="/schedule/add" style="text-decoration: none;">B-Smart</a>
+                            </h2>
                             <p>System Management</p>
                         </div>
                         <nav class="sidebar-nav">
@@ -849,6 +851,30 @@
                                 </a>
                             </div>
 
+
+                            <div class="nav-section">
+                                <h3>Reports</h3>
+                                <a href="/admin/reports" class="nav-item">
+                                    <i>📈</i>Statistics Report
+                                </a>
+                                <a href="/admin/analytics" class="nav-item">
+                                    <i>📊</i>Data Analytics
+                                </a>
+                            </div>
+
+                            <div class="nav-section">
+                                <h3>System</h3>
+                                <a href="/admin/settings" class="nav-item">
+                                    <i>⚙️</i>Settings
+                                </a>
+                                <a href="/admin/logs" class="nav-item">
+                                    <i>📝</i>System Logs
+                                </a>
+                            </div>
+
+
+
+                           
 
                             <div class="nav-section">
                                 <h3>Information</h3>
@@ -887,7 +913,7 @@
                                     <i class="fa-solid fa-exclamation-triangle"></i>
                                     ${error}
                                 </div>
-                            </c:if>
+                            </c:if
 
                             <!-- Search Section -->
                             <div class="search-section">
@@ -902,20 +928,20 @@
                                         <label for="role">Role</label>
                                         <select id="role" name="role" class="form-control">
                                             <option value="">All Roles</option>
-                                            <option value="ADMIN" ${param.role=='ADMIN' ? 'selected' : '' }>Admin
-                                            </option>
-                                            <option value="USER" ${param.role=='USER' ? 'selected' : '' }>User</option>
+                                            <option value="ADMIN" <c:if test="${param.role == 'ADMIN'}">selected</c:if>
+                                                >Admin</option>
+                                            <option value="USER" <c:if test="${param.role == 'USER'}">selected</c:if>
+                                                >User</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="status">Status</label>
                                         <select id="status" name="status" class="form-control">
                                             <option value="">All Status</option>
-                                            <option value="active" ${param.status=='active' ? 'selected' : '' }>Active
-                                            </option>
-                                            <option value="inactive" ${param.status=='inactive' ? 'selected' : '' }>
-                                                Inactive
-                                            </option>
+                                            <option value="active" <c:if test="${param.status == 'active'}">selected
+                                                </c:if>>Active</option>
+                                            <option value="inactive" <c:if test="${param.status == 'inactive'}">selected
+                                                </c:if>>Inactive</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -1051,17 +1077,32 @@
                                                                     <i class="fa-solid fa-edit"></i>
                                                                     Edit
                                                                 </a>
-                                                                <form method="POST"
-                                                                    action="/admin/users/toggle-status/${user.id}"
-                                                                    style="display: inline;"
-                                                                    onsubmit="return confirm('Are you sure you want to ${user.isActive() ? 'deactivate' : 'activate'} this user?')">
-                                                                    <button type="submit"
-                                                                        class="btn ${user.isActive() ? 'btn-warning' : 'btn-success'} btn-sm">
-                                                                        <i
-                                                                            class="fa-solid ${user.isActive() ? 'fa-user-slash' : 'fa-user-check'}"></i>
-                                                                        ${user.isActive() ? 'Deactivate' : 'Activate'}
-                                                                    </button>
-                                                                </form>
+                                                                <c:choose>
+                                                                    <c:when test="${user.isActive()}">
+                                                                        <form method="POST"
+                                                                            action="/admin/users/toggle-status/${user.id}"
+                                                                            style="display:inline;"
+                                                                            onsubmit="return confirm('Are you sure you want to deactivate this user?')">
+                                                                            <button type="submit"
+                                                                                class="btn btn-warning btn-sm">
+                                                                                <i class="fa-solid fa-user-slash"></i>
+                                                                                Deactivate
+                                                                            </button>
+                                                                        </form>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <form method="POST"
+                                                                            action="/admin/users/toggle-status/${user.id}"
+                                                                            style="display:inline;"
+                                                                            onsubmit="return confirm('Are you sure you want to activate this user?')">
+                                                                            <button type="submit"
+                                                                                class="btn btn-success btn-sm">
+                                                                                <i class="fa-solid fa-user-check"></i>
+                                                                                Activate
+                                                                            </button>
+                                                                        </form>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                                 <form method="POST"
                                                                     action="/admin/users/delete/${user.id}"
                                                                     style="display: inline;"
@@ -1097,11 +1138,6 @@
                                 }
                             });
                         }
-
-                        // Debug: Log user count
-                        console.log('Total users found:', ${ users.size() });
-                        console.log('Users in table:', document.querySelectorAll('tbody tr').length);
-
                         // Debug: Check if action buttons are visible
                         const actionButtons = document.querySelectorAll('.action-buttons');
                         console.log('Action button containers found:', actionButtons.length);

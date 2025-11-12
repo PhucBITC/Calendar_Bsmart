@@ -174,10 +174,10 @@ License: https://freebootstrap.net/license
                   <h1 class="hero-title mb-3" data-aos="fade-up" data-aos-delay="100">Smart, Efficient, and
                     User-Friendly Calendar Management</h1>
                   <p class="hero-description mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="200">Organize your time
-                    effortlessly with B-Smart Calendar — the smart, efficient, and user-friendly way to manage your
+                    effortlessly with B-Smart Calendar  the smart, efficient, and user-friendly way to manage your
                     tasks, events, and appointments.</p>
                   <div class="cta d-flex gap-2 mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="300"><a class="btn"
-                      href="#">Get Started Now</a><a class="btn btn-white-outline" href="#">Learn More
+                      href="/auth/login">Get Started Now</a><a class="btn btn-white-outline" href="#">Learn More
                       <svg class="lucide lucide-arrow-up-right" xmlns="http://www.w3.org/2000/svg" width="18"
                         height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">

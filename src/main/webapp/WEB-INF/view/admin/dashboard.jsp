@@ -533,7 +533,8 @@
             .admin-sidebar::-webkit-scrollbar-thumb:hover {
                 background: #a0aec0;
             }
-            .logoCalendar:hover{
+
+            .logoCalendar:hover {
                 color: rgb(54, 11, 51);
 
             }
@@ -553,7 +554,7 @@
             <!-- Sidebar -->
             <div class="admin-sidebar" id="adminSidebar">
                 <div class="sidebar-header">
-                    <h2><a class="logoCalendar" href="schedule/add" style="text-decoration: none;">B-Smart</a> </h2>
+                    <h2><a class="logoCalendar" href="/schedule/add" style="text-decoration: none;">B-Smart</a> </h2>
                     <p>System Management</p>
                 </div>
 
@@ -570,6 +571,25 @@
                             <i>📋</i>Task Management
                         </a>
                         <a href="/admin/schedules" class="nav-item">
+                        </a>
+                    </div>
+                    <div class="nav-section">
+                        <h3>Reports</h3>
+                        <a href="/admin/reports" class="nav-item">
+                            <i>📈</i>Statistics Report
+                        </a>
+                        <a href="/admin/analytics" class="nav-item">
+                            <i>📊</i>Data Analytics
+                        </a>
+                    </div>
+
+                    <div class="nav-section">
+                        <h3>System</h3>
+                        <a href="/admin/settings" class="nav-item">
+                            <i>⚙️</i>Settings
+                        </a>
+                        <a href="/admin/logs" class="nav-item">
+                            <i>📝</i>System Logs
                         </a>
                     </div>
 

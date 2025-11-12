@@ -10,13 +10,12 @@
             <link rel="canonical" href="http://localhost:8082/client/manifest.webmanifest" />
             <script src="/client/js/index.js" type="module"></script>
             <title> B-Smart</title>
-      
+
             <link rel="manifest" href="http://localhost:8082/client/manifest.webmanifest">
             <meta name="author" content="Mateusz Ziomek">
             <meta name="robots" content="index, follow">
             <meta property="og:type" content="website">
-            <meta property="og:title"
-                content=" Responsive App with HTML, CSS & JavaScript ">
+            <meta property="og:title" content=" Responsive App with HTML, CSS & JavaScript ">
             <meta property="og:description"
                 content=" is a fully responsive calendar app built with HTML, CSS, and JavaScript. Create, manage, and view events in real-time, all built from scratch without libraries or frameworks.">
             <meta property="og:url" content="https://vanilla-calendar.mateuszziomekit.com">
@@ -33,6 +32,19 @@
             <meta name="twitter:image" content="https://vanilla-calendar.mateuszziomekit.com/thumbnail.jpg">
             <meta name="twitter:image:alt"
                 content="A thumbnail of a  Youtube video, containing the mobile and the desktop view.">
+            <style>
+                #current-time-line {
+                    position: absolute;
+                    left: 60px;
+                    /* đẩy khỏi cột giờ */
+                    right: 0;
+                    height: 2px;
+                    background-color: orange;
+                    pointer-events: none;
+
+                }
+            </style>
+
         </head>
 
         <body>
@@ -526,7 +538,8 @@
 
                             <div class="form__split">
                                 <div class="form__field">
-                                    <label class="form__label" for="estimated-duration">Estimated Duration (minutes)</label>
+                                    <label class="form__label" for="estimated-duration">Estimated Duration
+                                        (minutes)</label>
                                     <input class="input input--fill" id="estimated-duration" name="estimatedDuration"
                                         type="number" value="60" min="15" max="480" required />
                                 </div>
@@ -575,10 +588,12 @@
 
                     <div class="dialog__footer">
                         <div class="dialog__actions">
-                            <button class="button button--secondary" type="button" data-dialog-close-button>Cancel</button>
+                            <button class="button button--secondary" type="button"
+                                data-dialog-close-button>Cancel</button>
                             <button class="button button--primary" id="generate-schedule-btn"
                                 style="cursor: pointer; pointer-events: auto;">Generate Schedule</button>
-                            <button class="button button--success" id="apply-schedule-btn" style="display: none;">Apply All</button>
+                            <button class="button button--success" id="apply-schedule-btn" style="display: none;">Apply
+                                All</button>
                         </div>
                     </div>
                 </div>
@@ -769,44 +784,9 @@
                 </li>
             </template>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const btn = document.getElementById('userMenuButton');
-                    const dropdown = document.getElementById('userMenuDropdown');
-                    btn.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-                    });
-                    document.addEventListener('click', function () {
-                        dropdown.style.display = 'none';
-                    });
 
-                    // FAB menu logic
-                    const fabMainBtn = document.getElementById('fabMainBtn');
-                    const fabMenuOptions = document.getElementById('fabMenuOptions');
-                    if (fabMainBtn && fabMenuOptions) {
-                        fabMainBtn.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            fabMenuOptions.style.display = fabMenuOptions.style.display === 'block' ? 'none' : 'block';
-                        });
-                        document.addEventListener('click', function () {
-                            fabMenuOptions.style.display = 'none';
-                        });
-                    }
 
-                    // Ensure all buttons with data-smart-schedule-button open dialog
-                    document.querySelectorAll('[data-smart-schedule-button]').forEach(function (btn) {
-                        btn.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            const dialog = document.querySelector('dialog[data-dialog="smart-schedule"]');
-                            if (dialog) dialog.showModal();
-                            // Hide fab menu if open
-                            const fabMenuOptions = document.getElementById('fabMenuOptions');
-                            if (fabMenuOptions) fabMenuOptions.style.display = 'none';
-                        });
-                    });
-                });
-            </script>
+
         </body>
 
         </html>

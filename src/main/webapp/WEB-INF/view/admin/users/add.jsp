@@ -496,9 +496,7 @@
                             <a href="/admin/tasks" class="nav-item">
                                 <i>📋</i>Task Management
                             </a>
-                            <a href="/admin/schedules" class="nav-item">
-
-                            </a>
+  
                         </div>
 
                         <div class="nav-section">
@@ -508,6 +506,16 @@
                             </a>
                             <a href="/admin/analytics" class="nav-item">
                                 <i>📊</i>Data Analytics
+                            </a>
+                        </div>
+
+                        <div class="nav-section">
+                            <h3>System</h3>
+                            <a href="/admin/settings" class="nav-item">
+                                <i>⚙️</i>Settings
+                            </a>
+                            <a href="/admin/logs" class="nav-item">
+                                <i>📝</i>System Logs
                             </a>
                         </div>
 
