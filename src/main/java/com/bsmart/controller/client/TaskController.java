@@ -166,246 +166,200 @@ public class TaskController {
         }
     }
 
-    // API: Sinh lịch tự động dựa trên thông tin task mới
-    @PostMapping("/api/generate-task-schedule")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> generateTaskSchedule(@RequestBody Map<String, Object> request,
-            HttpServletRequest httpRequest) {
-        try {
-            User currentUser = (User) httpRequest.getSession().getAttribute("currentUser");
-            if (currentUser == null) {
-                return ResponseEntity.status(401).body(createErrorResponse("User not authenticated"));
+        // API: Sinh lịch tự động dựa trên thông tin task mới
+
+        @PostMapping("/api/generate-task-schedule")
+
+        @ResponseBody
+
+        public ResponseEntity<Map<String, Object>> generateTaskSchedule(@RequestBody Map<String, Object> request,
+
+                HttpServletRequest httpRequest) {
+
+            try {
+
+                User currentUser = (User) httpRequest.getSession().getAttribute("currentUser");
+
+                if (currentUser == null) {
+
+                    return ResponseEntity.status(401).body(createErrorResponse("User not authenticated"));
+
+                }
+
+    
+
+                String taskTitle = (String) request.get("taskTitle");
+
+                String taskDescription = (String) request.get("taskDescription");
+
+                String taskPriority = (String) request.get("taskPriority");
+
+                String taskDeadline = (String) request.get("taskDeadline");
+
+                Integer estimatedDuration = (Integer) request.get("estimatedDuration");
+
+                Integer repeatCount = (Integer) request.get("repeatCount");
+
+                String startHour = (String) request.get("startHour");
+
+                String endHour = (String) request.get("endHour");
+
+                Integer breakTime = (Integer) request.get("breakTime");
+
+    
+
+                Task task = new Task();
+
+                task.setTitle(taskTitle);
+
+                task.setDescription(taskDescription);
+
+                task.setPriority(Task.Priority.valueOf(taskPriority));
+
+                task.setDeadline(LocalDate.parse(taskDeadline));
+
+                task.setEstimatedDuration(estimatedDuration);
+
+                task.setUser(currentUser);
+
+    
+
+                List<Map<String, Object>> scheduleSuggestions = taskService.generateTaskScheduleSuggestions(
+
+                        task, repeatCount, startHour, endHour, breakTime, true, true);
+
+    
+
+                Map<String, Object> response = new HashMap<>();
+
+                response.put("success", true);
+
+                response.put("data", scheduleSuggestions);
+
+                response.put("message", "Generated " + scheduleSuggestions.size() + " schedule suggestions");
+
+    
+
+                return ResponseEntity.ok(response);
+
+    
+
+            } catch (Exception e) {
+
+                return ResponseEntity.badRequest()
+
+                        .body(createErrorResponse("Error generating schedule: " + e.getMessage()));
+
             }
 
-            String taskTitle = (String) request.get("taskTitle");
-            String taskDescription = (String) request.get("taskDescription");
-            String taskPriority = (String) request.get("taskPriority");
-            String taskDeadline = (String) request.get("taskDeadline");
-            Integer estimatedDuration = (Integer) request.get("estimatedDuration");
-            Integer repeatCount = (Integer) request.get("repeatCount");
-            String startHour = (String) request.get("startHour");
-            String endHour = (String) request.get("endHour");
-            Integer breakTime = (Integer) request.get("breakTime");
+        }
 
-            Task task = new Task();
-            task.setTitle(taskTitle);
-            task.setDescription(taskDescription);
-            task.setPriority(Task.Priority.valueOf(taskPriority));
-            task.setDeadline(LocalDate.parse(taskDeadline));
-            task.setEstimatedDuration(estimatedDuration);
-            task.setUser(currentUser);
+    
 
-            List<Map<String, Object>> scheduleSuggestions = generateTaskBasedSchedule(
-                    task, repeatCount, startHour, endHour, breakTime, true, true);
+        // API: Save a new task from the auto-scheduler
+
+        @PostMapping("/api/save")
+
+        @ResponseBody
+
+        public ResponseEntity<Map<String, Object>> saveTask(@RequestBody Task task, HttpServletRequest request) {
+
+            User currentUser = (User) request.getSession().getAttribute("currentUser");
+
+            if (currentUser == null) {
+
+                return ResponseEntity.status(401).body(createErrorResponse("User not authenticated"));
+
+            }
+
+    
+
+            try {
+
+                task.setUser(currentUser);
+
+                Task savedTask = taskService.saveTask(task);
+
+    
+
+                Map<String, Object> responseData = new HashMap<>();
+
+                responseData.put("id", savedTask.getId());
+
+                responseData.put("title", savedTask.getTitle());
+
+    
+
+                return ResponseEntity.ok(createSuccessResponse("Task saved successfully.", responseData));
+
+            } catch (Exception e) {
+
+                return ResponseEntity.badRequest().body(createErrorResponse("Error saving task: " + e.getMessage()));
+
+            }
+
+        }
+
+    
+
+        // --- Private Helper Methods ---
+
+    
+
+        private LocalTime stringToLocalTime(String timeString) {
+
+            if (timeString == null || timeString.trim().isEmpty()) {
+
+                return null;
+        
+            }
+
+            try {
+
+                return LocalTime.parse(timeString);
+
+            } catch (Exception e) {
+
+                return null;
+
+            }
+
+        }
+
+    
+
+        private Map<String, Object> createSuccessResponse(String message, Object data) {
 
             Map<String, Object> response = new HashMap<>();
+
             response.put("success", true);
-            response.put("data", scheduleSuggestions);
-            response.put("message", "Generated " + scheduleSuggestions.size() + " schedule suggestions");
 
-            return ResponseEntity.ok(response);
+            response.put("message", message);
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(createErrorResponse("Error generating schedule: " + e.getMessage()));
-        }
-    }
+            if (data != null) {
 
-    // API: Save a new task from the auto-scheduler
-    @PostMapping("/api/save")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> saveTask(@RequestBody Task task, HttpServletRequest request) {
-        User currentUser = (User) request.getSession().getAttribute("currentUser");
-        if (currentUser == null) {
-            return ResponseEntity.status(401).body(createErrorResponse("User not authenticated"));
-        }
+                response.put("data", data);
 
-        try {
-            task.setUser(currentUser);
-            Task savedTask = taskService.saveTask(task);
-
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("id", savedTask.getId());
-            responseData.put("title", savedTask.getTitle());
-
-            return ResponseEntity.ok(createSuccessResponse("Task saved successfully.", responseData));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(createErrorResponse("Error saving task: " + e.getMessage()));
-        }
-    }
-
-    // --- Private Helper Methods ---
-
-    private List<Map<String, Object>> generateTaskBasedSchedule(
-            Task task, Integer repeatCount, String startHour, String endHour,
-            Integer breakTime, Boolean useEDF, Boolean useGreedy) {
-
-        List<Map<String, Object>> suggestions = new ArrayList<>();
-        int workStartMinutes = timeToMinutes(startHour);
-        int workEndMinutes = timeToMinutes(endHour);
-        int taskDuration = task.getEstimatedDuration() != null ? task.getEstimatedDuration() : 60;
-        User currentUser = task.getUser();
-        List<FixedSchedule> existingSchedules = fixedScheduleService.getSchedulesByUser(currentUser);
-        LocalDate startDate = LocalDate.now();
-        LocalDate deadline = task.getDeadline();
-        LocalTime now = LocalTime.now();
-        int currentMinutes = now.getHour() * 60 + now.getMinute();
-        int createdCount = 0;
-        LocalDate currentDate = startDate;
-
-        while (createdCount < repeatCount && !currentDate.isAfter(deadline)) {
-            Map<String, Object> slot = findAvailableSlot(
-                    currentDate, task, taskDuration, workStartMinutes, workEndMinutes,
-                    breakTime, existingSchedules, currentMinutes, useEDF, useGreedy);
-
-            if (slot != null) {
-                suggestions.add(slot);
-                createdCount++;
-                addToExistingSchedules(existingSchedules, slot, breakTime);
             }
-            currentDate = currentDate.plusDays(1);
+
+            return response;
+
         }
 
-        suggestions.sort((a, b) -> {
-            LocalDate dateA = LocalDate.parse((String) a.get("dayOfWeek"));
-            LocalDate dateB = LocalDate.parse((String) b.get("dayOfWeek"));
-            if (!dateA.equals(dateB)) {
-                return dateA.compareTo(dateB);
-            }
-            return ((String) a.get("startTime")).compareTo((String) b.get("startTime"));
-        });
+    
 
-        return suggestions;
-    }
+        private Map<String, Object> createErrorResponse(String message) {
 
-    private static class TimeSlot {
-        int startMinutes;
-        int endMinutes;
+            Map<String, Object> response = new HashMap<>();
 
-        TimeSlot(int startMinutes, int endMinutes) {
-            this.startMinutes = startMinutes;
-            this.endMinutes = endMinutes;
+            response.put("success", false);
+
+            response.put("message", message);
+
+            return response;
+
         }
+
     }
 
-    private Map<String, Object> findAvailableSlot(
-            LocalDate date, Task task, int taskDuration, int workStartMinutes,
-            int workEndMinutes, Integer breakTime, List<FixedSchedule> existingSchedules,
-            int currentMinutes, Boolean useEDF, Boolean useGreedy) {
-
-        List<TimeSlot> busySlots = getBusySlotsForDate(date, existingSchedules);
-        List<TimeSlot> freeSlots = findFreeSlots(workStartMinutes, workEndMinutes, busySlots);
-
-        for (TimeSlot freeSlot : freeSlots) {
-            int availableDuration = freeSlot.endMinutes - freeSlot.startMinutes;
-            int requiredDuration = taskDuration + (breakTime != null ? breakTime : 0);
-
-            if (availableDuration >= requiredDuration) {
-                int slotStart = freeSlot.startMinutes;
-                if (date.equals(LocalDate.now()) && slotStart < currentMinutes) {
-                    slotStart = currentMinutes;
-                }
-
-                if (freeSlot.endMinutes - slotStart >= requiredDuration) {
-                    return createScheduleSuggestion(task, date, slotStart, slotStart + taskDuration, useEDF, useGreedy);
-                }
-            }
-        }
-        return null; // Placeholder
-    }
-
-    private List<TimeSlot> getBusySlotsForDate(LocalDate date, List<FixedSchedule> existingSchedules) {
-        List<TimeSlot> busySlots = new ArrayList<>();
-        String dateStr = date.toString();
-        for (FixedSchedule schedule : existingSchedules) {
-            if (dateStr.equals(schedule.getDayOfWeek())) {
-                busySlots.add(new TimeSlot(timeToMinutes(schedule.getStartTime().toString()),
-                        timeToMinutes(schedule.getEndTime().toString())));
-            }
-        }
-        busySlots.sort((a, b) -> Integer.compare(a.startMinutes, b.startMinutes));
-        return busySlots;
-    }
-
-    private List<TimeSlot> findFreeSlots(int workStartMinutes, int workEndMinutes, List<TimeSlot> busySlots) {
-        List<TimeSlot> freeSlots = new ArrayList<>();
-        int currentTime = workStartMinutes;
-        for (TimeSlot busySlot : busySlots) {
-            if (currentTime < busySlot.startMinutes) {
-                freeSlots.add(new TimeSlot(currentTime, busySlot.startMinutes));
-            }
-            currentTime = Math.max(currentTime, busySlot.endMinutes);
-        }
-        if (currentTime < workEndMinutes) {
-            freeSlots.add(new TimeSlot(currentTime, workEndMinutes));
-        }
-        return freeSlots;
-    }
-
-    private void addToExistingSchedules(List<FixedSchedule> existingSchedules, Map<String, Object> newSlot,
-            Integer breakTime) {
-        FixedSchedule tempSchedule = new FixedSchedule();
-        tempSchedule.setDayOfWeek((String) newSlot.get("dayOfWeek"));
-        tempSchedule.setStartTime(LocalTime.parse((String) newSlot.get("startTime")));
-        LocalTime endTime = LocalTime.parse((String) newSlot.get("endTime"));
-        int breakMinutes = breakTime != null ? breakTime : 0;
-        tempSchedule.setEndTime(endTime.plusMinutes(breakMinutes));
-        existingSchedules.add(tempSchedule);
-    }
-
-    private Map<String, Object> createScheduleSuggestion(
-            Task task, LocalDate date, int startMinutes, int endMinutes,
-            Boolean useEDF, Boolean useGreedy) {
-        Map<String, Object> suggestion = new HashMap<>();
-        suggestion.put("taskTitle", task.getTitle());
-        suggestion.put("taskDescription", task.getDescription());
-        suggestion.put("dayOfWeek", date.toString());
-        suggestion.put("startTime", minutesToTime(startMinutes));
-        suggestion.put("endTime", minutesToTime(endMinutes));
-        suggestion.put("priority", task.getPriority().name());
-        suggestion.put("deadline", task.getDeadline().toString());
-        suggestion.put("estimatedDuration", endMinutes - startMinutes);
-        suggestion.put("algorithm",
-                useEDF && useGreedy ? "EDF + Greedy" : useEDF ? "EDF" : useGreedy ? "Greedy" : "Default");
-        return suggestion;
-    }
-
-    private int timeToMinutes(String time) {
-        String[] parts = time.split(":");
-        return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
-    }
-
-    private String minutesToTime(int minutes) {
-        int hours = minutes / 60;
-        int mins = minutes % 60;
-        return String.format("%02d:%02d", hours, mins);
-    }
-
-    private LocalTime stringToLocalTime(String timeString) {
-        if (timeString == null || timeString.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            return LocalTime.parse(timeString);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Map<String, Object> createSuccessResponse(String message, Object data) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", message);
-        if (data != null) {
-            response.put("data", data);
-        }
-        return response;
-    }
-
-    private Map<String, Object> createErrorResponse(String message) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", false);
-        response.put("message", message);
-        return response;
-    }
-}
+    

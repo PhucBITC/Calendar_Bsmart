@@ -188,7 +188,7 @@ function displaySuggestions(schedules) {
         </span>
       </div>
       <div style="font-size: 0.875rem; color: #64748b;">
-        <div><strong>Thời gian:</strong> ${schedule.startTime} - ${schedule.endTime}</div>
+        <div><strong>Thời gian:</strong> ${formatTime12Hour(schedule.startTime)} - ${formatTime12Hour(schedule.endTime)}</div>
         <div><strong>Ngày:</strong> ${schedule.dayOfWeek}</div>
         <div><strong>Thời lượng:</strong> ${schedule.estimatedDuration} phút</div>
         <div><strong>Deadline:</strong> ${schedule.deadline}</div>
@@ -198,6 +198,19 @@ function displaySuggestions(schedules) {
   `).join('');
 
   suggestionsDiv.innerHTML = html;
+}
+
+function formatTime12Hour(timeString) {
+  if (!timeString) return '';
+  const [hour, minute] = timeString.split(':');
+  const hourInt = parseInt(hour, 10);
+  const ampm = hourInt >= 12 ? 'PM' : 'AM';
+  let hour12 = hourInt % 12;
+  if (hour12 === 0) {
+    hour12 = 12; // The hour '0' or '12' should be '12'
+  }
+  const hourStr = hour12 < 10 ? '0' + hour12 : hour12;
+  return `${hourStr}:${minute} ${ampm}`;
 }
 
 function getPriorityColor(priority) {

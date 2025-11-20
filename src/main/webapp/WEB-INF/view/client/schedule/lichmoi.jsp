@@ -566,7 +566,7 @@
                                     <div class="form__field">
                                         <label class="form__label" for="end-hour">End Hour</label>
                                         <input class="input input--fill" id="end-hour" name="endHour" type="time"
-                                            value="17:00" required />
+                                            value="23:59" required />
                                     </div>
                                 </div>
                             </div>
