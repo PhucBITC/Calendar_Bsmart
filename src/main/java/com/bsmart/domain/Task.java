@@ -15,8 +15,6 @@ public class Task {
 
     private String description; // Mô tả công việc
 
-    private int duration; // thời lượng (giờ)
-
     private Integer estimatedDuration; // thời lượng ước tính (phút)
 
     @Enumerated(EnumType.STRING)
@@ -28,7 +26,9 @@ public class Task {
     private LocalDate deadline;
 
     private LocalDate createdAt = LocalDate.now(); // mặc định ngày tạo
-    
+
+    private boolean completed = false; // Trạng thái hoàn thành
+
     private LocalDate updatedAt = LocalDate.now(); // ngày cập nhật
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -58,14 +58,6 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
     }
 
     public Integer getEstimatedDuration() {
@@ -122,6 +114,14 @@ public class Task {
 
     public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     // Enum cho ưu tiên

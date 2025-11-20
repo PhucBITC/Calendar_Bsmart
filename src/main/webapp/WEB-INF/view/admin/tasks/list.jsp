@@ -1,715 +1,362 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-        <!DOCTYPE html>
-        <html>
-
-        <head>
-            <title>Task Management - B-Smart</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
-            <style>
-                * {
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                }
-
-                body {
-                    font-family: 'Segoe UI', sans-serif;
-                    background: #f5f7fa;
-                }
-
-                .container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
-                }
-
-                .header {
-                    background: white;
-                    padding: 20px;
-                    border-radius: 10px;
-                    margin-bottom: 20px;
-                }
-
-                .btn {
-                    padding: 10px 20px;
-                    border: none;
-                    border-radius: 5px;
-                    text-decoration: none;
-                    cursor: pointer;
-                }
-
-                .btn-primary {
-                    background: #3498db;
-                    color: white;
-                }
-
-                .table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    background: white;
-                    border-radius: 10px;
-                }
-
-                .table th,
-                .table td {
-                    padding: 12px;
-                    text-align: left;
-                    border-bottom: 1px solid #ddd;
-                }
-
-                .badge {
-                    padding: 4px 8px;
-                    border-radius: 12px;
-                    font-size: 11px;
-                }
-
-                .badge-high {
-                    background: #f8d7da;
-                    color: #721c24;
-                }
-
-                .badge-medium {
-                    background: #fff3cd;
-                    color: #856404;
-                }
-
-                .badge-low {
-                    background: #d1ecf1;
-                    color: #0c5460;
-                }
-
-                * {
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                }
-
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                    min-height: 100vh;
-                    color: #333;
-                    overflow-x: hidden;
-                }
-
-                .admin-container {
-                    display: flex;
-                    min-height: 100vh;
-                    position: relative;
-                }
-
-                /* Mobile Menu Toggle */
-                .mobile-menu-toggle {
-                    display: none;
-                    position: fixed;
-                    top: 20px;
-                    left: 20px;
-                    z-index: 1001;
-                    background: white;
-                    border: none;
-                    border-radius: 8px;
-                    padding: 12px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                }
-
-                .mobile-menu-toggle:hover {
-                    background: #f8f9fa;
-                    transform: scale(1.05);
-                }
-
-                .hamburger {
-                    width: 24px;
-                    height: 3px;
-                    background: #2c3e50;
-                    position: relative;
-                    transition: all 0.3s ease;
-                }
-
-                .hamburger::before,
-                .hamburger::after {
-                    content: '';
-                    position: absolute;
-                    width: 24px;
-                    height: 3px;
-                    background: #2c3e50;
-                    transition: all 0.3s ease;
-                }
-
-                .hamburger::before {
-                    top: -8px;
-                }
-
-                .hamburger::after {
-                    bottom: -8px;
-                }
-
-                .mobile-menu-toggle.active .hamburger {
-                    background: transparent;
-                }
-
-                .mobile-menu-toggle.active .hamburger::before {
-                    transform: rotate(45deg);
-                    top: 0;
-                }
-
-                .mobile-menu-toggle.active .hamburger::after {
-                    transform: rotate(-45deg);
-                    bottom: 0;
-                }
-
-                /* Overlay for mobile */
-                .mobile-overlay {
-                    display: none;
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.5);
-                    z-index: 999;
-                    opacity: 0;
-                    transition: opacity 0.3s ease;
-                }
-
-                .mobile-overlay.active {
-                    opacity: 1;
-                }
-
-                /* Sidebar */
-                .admin-sidebar {
-                    width: 280px;
-                    background: white;
-                    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-                    position: fixed;
-                    height: 100vh;
-                    overflow-y: auto;
-                    z-index: 1000;
-                    transition: transform 0.3s ease;
-                    left: 0;
-                    top: 0;
-                }
-
-                .sidebar-header {
-                    padding: 30px 25px;
-                    border-bottom: 1px solid #e8e8e8;
-                    text-align: center;
-                }
-
-                .sidebar-header h2 {
-                    color: #2c3e50;
-                    font-size: 24px;
-                    font-weight: 600;
-                    margin-bottom: 5px;
-                }
-
-                .sidebar-header p {
-                    color: #7f8c8d;
-                    font-size: 14px;
-                }
-
-                .sidebar-nav {
-                    padding: 20px 0;
-                }
-
-                .nav-section {
-                    margin-bottom: 30px;
-                }
-
-                .nav-section h3 {
-                    color: #95a5a6;
-                    font-size: 12px;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    padding: 0 25px 10px;
-                    font-weight: 600;
-                }
-
-                .nav-item {
-                    display: block;
-                    padding: 15px 25px;
-                    color: #34495e;
-                    text-decoration: none;
-                    transition: all 0.3s ease;
-                    border-left: 3px solid transparent;
-                    position: relative;
-                }
-
-                .nav-item:hover {
-                    background: #f8f9fa;
-                    color: #3498db;
-                    border-left-color: #3498db;
-                    transform: translateX(5px);
-                }
-
-                .nav-item.active {
-                    background: #ecf0f1;
-                    color: #3498db;
-                    border-left-color: #3498db;
-                }
-
-                .nav-item i {
-                    margin-right: 12px;
-                    width: 20px;
-                    text-align: center;
-                }
-
-                /* Main Content */
-                .admin-main {
-                    flex: 1;
-                    margin-left: 280px;
-                    padding: 30px;
-                    transition: margin-left 0.3s ease;
-                }
-
-                .main-header {
-                    background: white;
-                    padding: 25px 30px;
-                    border-radius: 15px;
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-                    margin-bottom: 30px;
-                }
-
-                .main-header h1 {
-                    color: #2c3e50;
-                    font-size: 32px;
-                    font-weight: 700;
-                    margin-bottom: 8px;
-                }
-
-                .main-header p {
-                    color: #7f8c8d;
-                    font-size: 16px;
-                }
-
-                /* Stats Cards */
-                .stats-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                    gap: 25px;
-                    margin-bottom: 30px;
-                }
-
-                .stat-card {
-                    background: white;
-                    padding: 30px;
-                    border-radius: 15px;
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-                    transition: all 0.3s ease;
-                    position: relative;
-                    overflow: hidden;
-                }
-
-                .stat-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-                }
-
-                .stat-card::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 4px;
-                    background: linear-gradient(90deg, #3498db, #2980b9);
-                }
-
-                .stat-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                }
-
-                .stat-title {
-                    color: #7f8c8d;
-                    font-size: 14px;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-
-                .stat-icon {
-                    width: 50px;
-                    height: 50px;
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 24px;
-                    color: white;
-                }
-
-                .stat-icon.users {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                }
-
-                .stat-icon.tasks {
-                    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                }
-
-                .stat-icon.schedules {
-                    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-                }
-
-                .stat-icon.system {
-                    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-                }
-
-                .stat-number {
-                    font-size: 36px;
-                    font-weight: 700;
-                    color: #2c3e50;
-                    margin-bottom: 8px;
-                }
-
-                .stat-change {
-                    display: flex;
-                    align-items: center;
-                    font-size: 14px;
-                }
-
-                .stat-change.positive {
-                    color: #27ae60;
-                }
-
-                .stat-change.negative {
-                    color: #e74c3c;
-                }
-
-                /* Quick Actions */
-                .quick-actions {
-                    background: white;
-                    padding: 30px;
-                    border-radius: 15px;
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-                }
-
-                .section-title {
-                    color: #2c3e50;
-                    font-size: 24px;
-                    font-weight: 600;
-                    margin-bottom: 25px;
-                    display: flex;
-                    align-items: center;
-                }
-
-                .section-title i {
-                    margin-right: 12px;
-                    color: #3498db;
-                }
-
-                .actions-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: 20px;
-                }
-
-                .action-btn {
-                    display: flex;
-                    align-items: center;
-                    padding: 20px;
-                    background: #f8f9fa;
-                    border: 2px solid #e9ecef;
-                    border-radius: 12px;
-                    text-decoration: none;
-                    color: #495057;
-                    transition: all 0.3s ease;
-                    font-weight: 500;
-                }
-
-                .action-btn:hover {
-                    background: #3498db;
-                    color: white;
-                    border-color: #3498db;
-                    transform: translateY(-2px);
-                    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-                }
-
-                .action-btn i {
-                    margin-right: 12px;
-                    font-size: 20px;
-                }
-
-                /* Responsive Design */
-                @media (max-width: 1024px) {
-                    .stats-grid {
-                        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                        gap: 20px;
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+            <!DOCTYPE html>
+            <html>
+
+            <head>
+                <title>Task Management - B-Smart</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <!-- Bootstrap 5 CSS -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+                    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+                    crossorigin="anonymous">
+                <!-- Font Awesome -->
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+                <style>
+                    body {
+                        background-color: #f0f2f5;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     }
 
-                    .actions-grid {
-                        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                        gap: 15px;
-                    }
-
-                    .admin-main {
-                        padding: 25px;
-                    }
-                }
-
-                @media (max-width: 768px) {
-                    .mobile-menu-toggle {
-                        display: block;
-                    }
-
-                    .mobile-overlay {
-                        display: block;
-                    }
-
-                    .admin-sidebar {
-                        transform: translateX(-100%);
+                    .sidebar {
+                        height: 100vh;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
                         width: 280px;
+                        background-color: #fff;
+                        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+                        transition: all 0.3s ease;
+                        z-index: 1045;
                     }
 
-                    .admin-sidebar.mobile-open {
-                        transform: translateX(0);
+                    .main-content {
+                        margin-left: 280px;
+                        transition: all 0.3s ease;
+                        padding: 2rem;
+                        width: calc(100% - 280px);
                     }
 
-                    .admin-main {
-                        margin-left: 0;
-                        padding: 20px;
-                        padding-top: 80px;
+                    .sidebar-header {
+                        padding: 1.5rem;
+                        text-align: center;
+                        border-bottom: 1px solid #e9ecef;
                     }
 
-                    .main-header {
-                        padding: 20px;
-                        margin-bottom: 20px;
+                    .sidebar-header h2 a {
+                        color: #2c3e50;
+                        font-weight: 700;
+                        text-decoration: none;
                     }
 
-                    .main-header h1 {
-                        font-size: 28px;
+                    .sidebar-nav .nav-link {
+                        color: #34495e;
+                        padding: 0.8rem 1.5rem;
+                        display: flex;
+                        align-items: center;
+                        border-left: 3px solid transparent;
+                        transition: all 0.2s ease;
                     }
 
-                    .stats-grid {
-                        grid-template-columns: 1fr;
-                        gap: 15px;
+                    .sidebar-nav .nav-link:hover {
+                        background-color: #f8f9fa;
+                        color: #3498db;
+                        border-left-color: #3498db;
                     }
 
-                    .stat-card {
-                        padding: 25px;
+                    .sidebar-nav .nav-link.active {
+                        background-color: #e9ecef;
+                        color: #3498db;
+                        border-left-color: #3498db;
+                        font-weight: 600;
                     }
 
-                    .stat-number {
-                        font-size: 32px;
+                    .sidebar-nav .nav-link i {
+                        width: 25px;
+                        text-align: center;
+                        margin-right: 0.5rem;
                     }
 
-                    .actions-grid {
-                        grid-template-columns: 1fr;
-                        gap: 15px;
+                    .nav-section-title {
+                        color: #95a5a6;
+                        font-size: 0.75rem;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        padding: 1.5rem 1.5rem 0.5rem;
+                        font-weight: 600;
                     }
 
-                    .action-btn {
-                        padding: 18px;
+                    .mobile-menu-button {
+                        display: none;
+                        position: fixed;
+                        top: 15px;
+                        left: 15px;
+                        z-index: 1041;
                     }
 
-                    .quick-actions {
-                        padding: 25px;
+                    @media (max-width: 991.98px) {
+                        .sidebar {
+                            left: -280px;
+                        }
+
+                        .main-content {
+                            margin-left: 0;
+                            width: 100%;
+                        }
+
+                        .mobile-menu-button {
+                            display: block;
+                        }
                     }
+                </style>
+            </head>
 
-                    .section-title {
-                        font-size: 22px;
-                    }
-                }
+            <body>
+                <!-- Mobile Menu Button -->
+                <button class="btn btn-primary mobile-menu-button" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#adminSidebar" aria-controls="adminSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
 
-                @media (max-width: 480px) {
-                    .admin-main {
-                        padding: 15px;
-                        padding-top: 70px;
-                    }
-
-                    .main-header {
-                        padding: 15px;
-                    }
-
-                    .main-header h1 {
-                        font-size: 24px;
-                    }
-
-                    .main-header p {
-                        font-size: 14px;
-                    }
-
-                    .stat-card {
-                        padding: 20px;
-                    }
-
-                    .stat-header {
-                        flex-direction: column;
-                        align-items: flex-start;
-                        gap: 10px;
-                    }
-
-                    .stat-icon {
-                        width: 40px;
-                        height: 40px;
-                        font-size: 20px;
-                    }
-
-                    .stat-number {
-                        font-size: 28px;
-                    }
-
-                    .action-btn {
-                        padding: 15px;
-                        font-size: 14px;
-                    }
-
-                    .action-btn i {
-                        font-size: 18px;
-                    }
-
-                    .quick-actions {
-                        padding: 20px;
-                    }
-
-                    .section-title {
-                        font-size: 20px;
-                    }
-                }
-
-                /* Icons */
-                .icon {
-                    display: inline-block;
-                    width: 1em;
-                    height: 1em;
-                    stroke-width: 0;
-                    stroke: currentColor;
-                    fill: currentColor;
-                }
-
-                /* Smooth scrolling for sidebar */
-                .admin-sidebar {
-                    scrollbar-width: thin;
-                    scrollbar-color: #cbd5e0 #f7fafc;
-                }
-
-                .admin-sidebar::-webkit-scrollbar {
-                    width: 6px;
-                }
-
-                .admin-sidebar::-webkit-scrollbar-track {
-                    background: #f7fafc;
-                }
-
-                .admin-sidebar::-webkit-scrollbar-thumb {
-                    background: #cbd5e0;
-                    border-radius: 3px;
-                }
-
-                .admin-sidebar::-webkit-scrollbar-thumb:hover {
-                    background: #a0aec0;
-                }
-            </style>
-        </head>
-
-        <body>
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" id="mobileMenuToggle">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <!-- Mobile Overlay -->
-            <div class="mobile-overlay" id="mobileOverlay"></div>
-
-            <div class="admin-container">
-                <!-- Sidebar -->
-                <div class="admin-sidebar" id="adminSidebar">
-                    <div class="sidebar-header">
-                        <h2>
-                            <a class="logoCalendar" href="/schedule/add" style="text-decoration: none;">B-Smart</a>
+                <!-- Sidebar (Offcanvas for mobile) -->
+                <div class="offcanvas-lg offcanvas-start sidebar" tabindex="-1" id="adminSidebar"
+                    aria-labelledby="adminSidebarLabel">
+                    <div class="offcanvas-header sidebar-header">
+                        <h2 class="offcanvas-title" id="adminSidebarLabel">
+                            <a href="/schedule/add">B-Smart</a>
                         </h2>
-                        <p>System Management</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                            data-bs-target="#adminSidebar" aria-label="Close"></button>
                     </div>
-                    <nav class="sidebar-nav">
-                        <div class="nav-section">
-                            <h3>Main Management</h3>
-                            <a href="/admin" class="nav-item ">
-                                <i>📊</i>Dashboard
-                            </a>
-                            <a href="/admin/users" class="nav-item ">
-                                <i>👥</i>User Management
-                            </a>
-                            <a href="/admin/tasks" class="nav-item active">
-                                <i>📋</i>Task Management
-                            </a>
-                            
-                        </div>
-
-                        <div class="nav-section">
-                            <h3>Reports</h3>
-                            <a href="/admin/reports" class="nav-item">
-                                <i>📈</i>Statistics Report
-                            </a>
-                            <a href="/admin/analytics" class="nav-item">
-                                <i>📊</i>Data Analytics
-                            </a>
-                        </div>
-
-                        <div class="nav-section">
-                            <h3>System</h3>
-                            <a href="/admin/settings" class="nav-item">
-                                <i>⚙️</i>Settings
-                            </a>
-                            <a href="/admin/logs" class="nav-item">
-                                <i>📝</i>System Logs
-                            </a>
-                        </div>
-
-                         <div class="nav-section">
-                        <h3>Information</h3>
-                        <a href="/auth/logout" class="nav-item">
-                            <i class="fa-solid fa-right-from-bracket"></i> Logout
-                        </a>
+                    <div class="offcanvas-body d-flex flex-column p-0">
+                        <nav class="sidebar-nav flex-grow-1">
+                            <div class="sidebar-header">
+                                <h2>
+                                    <a class="logoCalendar" href="/schedule/add"
+                                        style="text-decoration: none;">B-Smart</a>
+                                </h2>
+                                <p>System Management</p>
+                            </div>
+                            <div>
+                                <h3 class="nav-section-title">Main Management</h3>
+                                <a href="/admin" class="nav-link">
+                                    <i>📊</i>Dashboard
+                                </a>
+                                <a href="/admin/users" class="nav-link">
+                                    <i>👥</i>User Management
+                                </a>
+                                <a href="/admin/tasks" class="nav-link active">
+                                    <i>📋</i>Task Management
+                                </a>
+                            </div>
+                            <div>
+                                <h3 class="nav-section-title">Reports</h3>
+                                <a href="/admin/reports" class="nav-link">
+                                    <i>📈</i>Statistics Report
+                                </a>
+                                <a href="/admin/analytics" class="nav-link">
+                                    <i>📊</i>Data Analytics
+                                </a>
+                            </div>
+                            <div>
+                                <h3 class="nav-section-title">System</h3>
+                                <a href="/admin/settings" class="nav-link">
+                                    <i>⚙️</i>Settings
+                                </a>
+                                <a href="/admin/logs" class="nav-link">
+                                    <i>📝</i>System Logs
+                                </a>
+                            </div>
+                            <div>
+                                 <a href="/auth/logout" class="nav-link">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                                </a>
+                            </div>
+                        </nav>
+                       
                     </div>
-
-                    </nav>
                 </div>
+
                 <!-- Main Content -->
-                <div class="admin-main">
-                    <div class="container">
-                        <div class="header" style="
-    display: flex;
-    justify-content: space-between;
-">
-                            <h1>Task Management</h1>
-                            <a href="/admin/tasks/add" class="btn btn-primary">Add New Task</a>
+                <main class="main-content">
+                    <div class="container-fluid">
+                        <!-- Header -->
+                        <div
+                            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                            <div>
+                                <h1 class="h2">Task Management</h1>
+                                <p class="text-muted">Manage all system tasks.</p>
+                            </div>
+                            <a href="/admin/tasks/add" class="btn btn-primary">
+                                <i class="fa-solid fa-plus"></i> Add New Task
+                            </a>
                         </div>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Assigned To</th>
-                                    <th>Priority</th>
-                                    <th>Status</th>
-                                    <th>Deadline</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="task" items="${tasks}">
-                                    <tr>
-                                        <td>${task.title}</td>
-                                        <td>${task.user != null ? task.user.username : 'Unassigned'}</td>
-                                        <td><span
-                                                class="badge badge-${task.priority.name().toLowerCase()}">${task.priority.name()}</span>
-                                        </td>
-                                        <td>${task.status.name()}</td>
-                                        <td>${task.deadline != null ? task.deadline : 'N/A'}</td>
-                                        <td>
-                                            <a href="/admin/tasks/view/${task.id}" class="btn btn-primary">View</a>
-                                            <a href="/admin/tasks/edit/${task.id}" class="btn btn-primary">Edit</a>
-                                            <a href="/admin/tasks/delete/${task.id}" class="btn btn-primary">Delete</a>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </body>
 
-        </html>
+                        <!-- Search & Filter Section -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <form method="GET" action="/admin/tasks">
+                                    <div class="row g-3 align-items-end">
+                                        <div class="col-md-4">
+                                            <label for="search" class="form-label">Search Tasks</label>
+                                            <input type="text" id="search" name="search" class="form-control"
+                                                placeholder="Title, description, user..." value="${param.search}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="priority" class="form-label">Priority</label>
+                                            <select id="priority" name="priority" class="form-select">
+                                                <option value="">All Priorities</option>
+                                                <option value="HIGH" <c:if test="${param.priority == 'HIGH'}">selected
+                                                    </c:if>>High</option>
+                                                <option value="MEDIUM" <c:if test="${param.priority == 'MEDIUM'}">
+                                                    selected</c:if>>Medium</option>
+                                                <option value="LOW" <c:if test="${param.priority == 'LOW'}">selected
+                                                    </c:if>>Low</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="status" class="form-label">Status</label>
+                                            <select id="status" name="status" class="form-select">
+                                                <option value="">All Statuses</option>
+                                                <option value="PENDING" <c:if test="${param.status == 'PENDING'}">
+                                                    selected</c:if>>Pending</option>
+                                                <option value="IN_PROGRESS" <c:if
+                                                    test="${param.status == 'IN_PROGRESS'}">selected</c:if>>In Progress
+                                                </option>
+                                                <option value="COMPLETED" <c:if test="${param.status == 'COMPLETED'}">
+                                                    selected</c:if>>Completed</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary w-100"><i
+                                                    class="fa-solid fa-search"></i></button>
+                                            <a href="/admin/tasks" class="btn btn-secondary w-100"><i
+                                                    class="fa-solid fa-times"></i></a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Tasks Table -->
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Tasks List (${tasks.size()} task${tasks.size() != 1 ? 's' : ''})</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">Title</th>
+                                                <th scope="col">Assigned To</th>
+                                                <th scope="col">Priority</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Deadline</th>
+                                                <th scope="col" class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:choose>
+                                                <c:when test="${empty tasks}">
+                                                    <tr>
+                                                        <td colspan="6" class="text-center py-5">
+                                                            <div class="text-muted">
+                                                                <i class="fa-solid fa-tasks fa-3x mb-3"></i>
+                                                                <p class="mb-0">No tasks found.</p>
+                                                                <small>Try adjusting your search criteria or add a new
+                                                                    task.</small>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:forEach var="task" items="${tasks}">
+                                                        <tr>
+                                                            <td class="align-middle">${task.title}</td>
+                                                            <td class="align-middle">${task.user != null ?
+                                                                task.user.username : 'Unassigned'}</td>
+                                                            <td class="align-middle">
+                                                                <c:set var="priorityClass" value="" />
+                                                                <c:if test="${task.priority.name() == 'HIGH'}">
+                                                                    <c:set var="priorityClass" value="text-bg-danger" />
+                                                                </c:if>
+                                                                <c:if test="${task.priority.name() == 'MEDIUM'}">
+                                                                    <c:set var="priorityClass"
+                                                                        value="text-bg-warning" />
+                                                                </c:if>
+                                                                <c:if test="${task.priority.name() == 'LOW'}">
+                                                                    <c:set var="priorityClass" value="text-bg-info" />
+                                                                </c:if>
+                                                                <span
+                                                                    class="badge ${priorityClass}">${task.priority.name()}</span>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <c:set var="statusClass" value="text-bg-secondary" />
+                                                                <c:if test="${task.status.name() == 'PENDING'}">
+                                                                    <c:set var="statusClass"
+                                                                        value="text-bg-secondary" />
+                                                                </c:if>
+                                                                <c:if test="${task.status.name() == 'IN_PROGRESS'}">
+                                                                    <c:set var="statusClass" value="text-bg-primary" />
+                                                                </c:if>
+                                                                <c:if test="${task.status.name() == 'COMPLETED'}">
+                                                                    <c:set var="statusClass" value="text-bg-success" />
+                                                                </c:if>
+                                                                <span
+                                                                    class="badge ${statusClass}">${task.status.name().replace('_',
+                                                                    ' ')}</span>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <c:choose>
+                                                                    <c:when test="${task.deadline != null}">
+                                                                        <fmt:parseDate value="${task.deadline}"
+                                                                            pattern="yyyy-MM-dd" var="parsedDate"
+                                                                            type="date" />
+                                                                        <fmt:formatDate value="${parsedDate}"
+                                                                            pattern="dd/MM/yyyy" />
+                                                                    </c:when>
+                                                                    <c:otherwise>N/A</c:otherwise>
+                                                                </c:choose>
+                                                            </td>
+                                                            <td class="align-middle text-end">
+                                                                <div class="btn-group btn-group-sm" role="group">
+                                                                    <a href="/admin/tasks/view/${task.id}"
+                                                                        class="btn btn-outline-success" title="View"><i
+                                                                            class="fa-solid fa-eye"></i></a>
+                                                                    <a href="/admin/tasks/edit/${task.id}"
+                                                                        class="btn btn-outline-warning" title="Edit"><i
+                                                                            class="fa-solid fa-edit"></i></a>
+                                                                    <form method="POST"
+                                                                        action="/admin/tasks/delete/${task.id}"
+                                                                        class="d-inline"
+                                                                        onsubmit="return confirm('Are you sure you want to delete this task?')">
+                                                                        <button type="submit"
+                                                                            class="btn btn-outline-danger"
+                                                                            title="Delete"><i
+                                                                                class="fa-solid fa-trash"></i></button>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                </main>
+                </main>
+
+                <!-- Bootstrap 5 JS -->
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+                    crossorigin="anonymous"></script>
+            </body>
+
+            </html>

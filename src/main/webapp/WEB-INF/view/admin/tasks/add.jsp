@@ -440,7 +440,9 @@
                 <!-- Sidebar -->
                 <div class="admin-sidebar" id="adminSidebar">
                     <div class="sidebar-header">
-                        <h2>B-Smart</h2>
+                        <h2>
+                            <a class="logoCalendar" href="/schedule/add" style="text-decoration: none;">B-Smart</a>
+                        </h2>
                         <p>System Management</p>
                     </div>
 
@@ -456,12 +458,10 @@
                             <a href="/admin/tasks" class="nav-item active">
                                 <i>📋</i>Task Management
                             </a>
-                            <a href="/admin/schedules" class="nav-item">
-                                <i>🗓️</i>Schedule Management
-                            </a>
+                           
                         </div>
 
-                         <div class="nav-section">
+                        <div class="nav-section">
                             <h3>Reports</h3>
                             <a href="/admin/reports" class="nav-item">
                                 <i>📈</i>Statistics Report

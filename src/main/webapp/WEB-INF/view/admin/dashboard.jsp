@@ -1,763 +1,431 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <!DOCTYPE html>
-    <html>
-
-    <head>
-        <title>System Management - B-Smart</title>
-        <link rel="stylesheet" href="/client/css/index.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
-            integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                min-height: 100vh;
-                color: #333;
-                overflow-x: hidden;
-            }
-
-            .admin-container {
-                display: flex;
-                min-height: 100vh;
-                position: relative;
-            }
-
-            /* Mobile Menu Toggle */
-            .mobile-menu-toggle {
-                display: none;
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1001;
-                background: white;
-                border: none;
-                border-radius: 8px;
-                padding: 12px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .mobile-menu-toggle:hover {
-                background: #f8f9fa;
-                transform: scale(1.05);
-            }
-
-            .hamburger {
-                width: 24px;
-                height: 3px;
-                background: #2c3e50;
-                position: relative;
-                transition: all 0.3s ease;
-            }
-
-            .hamburger::before,
-            .hamburger::after {
-                content: '';
-                position: absolute;
-                width: 24px;
-                height: 3px;
-                background: #2c3e50;
-                transition: all 0.3s ease;
-            }
-
-            .hamburger::before {
-                top: -8px;
-            }
-
-            .hamburger::after {
-                bottom: -8px;
-            }
-
-            .mobile-menu-toggle.active .hamburger {
-                background: transparent;
-            }
-
-            .mobile-menu-toggle.active .hamburger::before {
-                transform: rotate(45deg);
-                top: 0;
-            }
-
-            .mobile-menu-toggle.active .hamburger::after {
-                transform: rotate(-45deg);
-                bottom: 0;
-            }
-
-            /* Overlay for mobile */
-            .mobile-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 999;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-
-            .mobile-overlay.active {
-                opacity: 1;
-            }
-
-            /* Sidebar */
-            .admin-sidebar {
-                width: 280px;
-                background: white;
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-                position: fixed;
-                height: 100vh;
-                overflow-y: auto;
-                z-index: 1000;
-                transition: transform 0.3s ease;
-                left: 0;
-                top: 0;
-            }
-
-            .sidebar-header {
-                padding: 30px 25px;
-                border-bottom: 1px solid #e8e8e8;
-                text-align: center;
-            }
-
-            .sidebar-header h2 {
-                color: #2c3e50;
-                font-size: 24px;
-                font-weight: 600;
-                margin-bottom: 5px;
-            }
-
-            .sidebar-header p {
-                color: #7f8c8d;
-                font-size: 14px;
-            }
-
-            .sidebar-nav {
-                padding: 20px 0;
-            }
-
-            .nav-section {
-                margin-bottom: 30px;
-            }
-
-            .nav-section h3 {
-                color: #95a5a6;
-                font-size: 12px;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                padding: 0 25px 10px;
-                font-weight: 600;
-            }
-
-            .nav-item {
-                display: block;
-                padding: 15px 25px;
-                color: #34495e;
-                text-decoration: none;
-                transition: all 0.3s ease;
-                border-left: 3px solid transparent;
-                position: relative;
-            }
-
-            .nav-item:hover {
-                background: #f8f9fa;
-                color: #3498db;
-                border-left-color: #3498db;
-                transform: translateX(5px);
-            }
-
-            .nav-item.active {
-                background: #ecf0f1;
-                color: #3498db;
-                border-left-color: #3498db;
-            }
-
-            .nav-item i {
-                margin-right: 12px;
-                width: 20px;
-                text-align: center;
-            }
-
-            /* Main Content */
-            .admin-main {
-                flex: 1;
-                margin-left: 280px;
-                padding: 30px;
-                transition: margin-left 0.3s ease;
-            }
-
-            .main-header {
-                background: white;
-                padding: 25px 30px;
-                border-radius: 15px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-                margin-bottom: 30px;
-            }
-
-            .main-header h1 {
-                color: #2c3e50;
-                font-size: 32px;
-                font-weight: 700;
-                margin-bottom: 8px;
-            }
-
-            .main-header p {
-                color: #7f8c8d;
-                font-size: 16px;
-            }
-
-            /* Stats Cards */
-            .stats-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 25px;
-                margin-bottom: 30px;
-            }
-
-            .stat-card {
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-                transition: all 0.3s ease;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .stat-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            }
-
-            .stat-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 4px;
-                background: linear-gradient(90deg, #3498db, #2980b9);
-            }
-
-            .stat-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-
-            .stat-title {
-                color: #7f8c8d;
-                font-size: 14px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }
-
-            .stat-icon {
-                width: 50px;
-                height: 50px;
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 24px;
-                color: white;
-            }
-
-            .stat-icon.users {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-
-            .stat-icon.tasks {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            }
-
-            .stat-icon.schedules {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            }
-
-            .stat-icon.system {
-                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            }
-
-            .stat-number {
-                font-size: 36px;
-                font-weight: 700;
-                color: #2c3e50;
-                margin-bottom: 8px;
-            }
-
-            .stat-change {
-                display: flex;
-                align-items: center;
-                font-size: 14px;
-            }
-
-            .stat-change.positive {
-                color: #27ae60;
-            }
-
-            .stat-change.negative {
-                color: #e74c3c;
-            }
-
-            /* Quick Actions */
-            .quick-actions {
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            }
-
-            .section-title {
-                color: #2c3e50;
-                font-size: 24px;
-                font-weight: 600;
-                margin-bottom: 25px;
-                display: flex;
-                align-items: center;
-            }
-
-            .section-title i {
-                margin-right: 12px;
-                color: #3498db;
-            }
-
-            .actions-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 20px;
-            }
-
-            .action-btn {
-                display: flex;
-                align-items: center;
-                padding: 20px;
-                background: #f8f9fa;
-                border: 2px solid #e9ecef;
-                border-radius: 12px;
-                text-decoration: none;
-                color: #495057;
-                transition: all 0.3s ease;
-                font-weight: 500;
-            }
-
-            .action-btn:hover {
-                background: #3498db;
-                color: white;
-                border-color: #3498db;
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-            }
-
-            .action-btn i {
-                margin-right: 12px;
-                font-size: 20px;
-            }
-
-            /* Responsive Design */
-            @media (max-width: 1024px) {
-                .stats-grid {
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                    gap: 20px;
-                }
-
-                .actions-grid {
-                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                    gap: 15px;
-                }
-
-                .admin-main {
-                    padding: 25px;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .mobile-menu-toggle {
-                    display: block;
-                }
-
-                .mobile-overlay {
-                    display: block;
-                }
-
-                .admin-sidebar {
-                    transform: translateX(-100%);
-                    width: 280px;
-                }
-
-                .admin-sidebar.mobile-open {
-                    transform: translateX(0);
-                }
-
-                .admin-main {
-                    margin-left: 0;
-                    padding: 20px;
-                    padding-top: 80px;
-                }
-
-                .main-header {
-                    padding: 20px;
-                    margin-bottom: 20px;
-                }
-
-                .main-header h1 {
-                    font-size: 28px;
-                }
-
-                .stats-grid {
-                    grid-template-columns: 1fr;
-                    gap: 15px;
-                }
-
-                .stat-card {
-                    padding: 25px;
-                }
-
-                .stat-number {
-                    font-size: 32px;
-                }
-
-                .actions-grid {
-                    grid-template-columns: 1fr;
-                    gap: 15px;
-                }
-
-                .action-btn {
-                    padding: 18px;
-                }
-
-                .quick-actions {
-                    padding: 25px;
-                }
-
-                .section-title {
-                    font-size: 22px;
-                }
-            }
-
-            @media (max-width: 480px) {
-                .admin-main {
-                    padding: 15px;
-                    padding-top: 70px;
-                }
-
-                .main-header {
-                    padding: 15px;
-                }
-
-                .main-header h1 {
-                    font-size: 24px;
-                }
-
-                .main-header p {
-                    font-size: 14px;
-                }
-
-                .stat-card {
-                    padding: 20px;
-                }
-
-                .stat-header {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 10px;
-                }
-
-                .stat-icon {
-                    width: 40px;
-                    height: 40px;
-                    font-size: 20px;
-                }
-
-                .stat-number {
-                    font-size: 28px;
-                }
-
-                .action-btn {
-                    padding: 15px;
-                    font-size: 14px;
-                }
-
-                .action-btn i {
-                    font-size: 18px;
-                }
-
-                .quick-actions {
-                    padding: 20px;
-                }
-
-                .section-title {
-                    font-size: 20px;
-                }
-            }
-
-            /* Icons */
-            .icon {
-                display: inline-block;
-                width: 1em;
-                height: 1em;
-                stroke-width: 0;
-                stroke: currentColor;
-                fill: currentColor;
-            }
-
-            /* Smooth scrolling for sidebar */
-            .admin-sidebar {
-                scrollbar-width: thin;
-                scrollbar-color: #cbd5e0 #f7fafc;
-            }
-
-            .admin-sidebar::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            .admin-sidebar::-webkit-scrollbar-track {
-                background: #f7fafc;
-            }
-
-            .admin-sidebar::-webkit-scrollbar-thumb {
-                background: #cbd5e0;
-                border-radius: 3px;
-            }
-
-            .admin-sidebar::-webkit-scrollbar-thumb:hover {
-                background: #a0aec0;
-            }
-
-            .logoCalendar:hover {
-                color: rgb(54, 11, 51);
-
-            }
-        </style>
-    </head>
-
-    <body>
-        <!-- Mobile Menu Toggle -->
-        <button class="mobile-menu-toggle" id="mobileMenuToggle">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-
-        <!-- Mobile Overlay -->
-        <div class="mobile-overlay" id="mobileOverlay"></div>
-
-        <div class="admin-container">
-            <!-- Sidebar -->
-            <div class="admin-sidebar" id="adminSidebar">
-                <div class="sidebar-header">
-                    <h2><a class="logoCalendar" href="/schedule/add" style="text-decoration: none;">B-Smart</a> </h2>
-                    <p>System Management</p>
-                </div>
-
-                <nav class="sidebar-nav">
-                    <div class="nav-section">
-                        <h3>Main Management</h3>
-                        <a href="/admin" class="nav-item active">
-                            <i>📊</i>Dashboard
-                        </a>
-                        <a href="/admin/users" class="nav-item">
-                            <i>👥</i>User Management
-                        </a>
-                        <a href="/admin/tasks" class="nav-item">
-                            <i>📋</i>Task Management
-                        </a>
-                        <a href="/admin/schedules" class="nav-item">
-                        </a>
-                    </div>
-                    <div class="nav-section">
-                        <h3>Reports</h3>
-                        <a href="/admin/reports" class="nav-item">
-                            <i>📈</i>Statistics Report
-                        </a>
-                        <a href="/admin/analytics" class="nav-item">
-                            <i>📊</i>Data Analytics
-                        </a>
-                    </div>
-
-                    <div class="nav-section">
-                        <h3>System</h3>
-                        <a href="/admin/settings" class="nav-item">
-                            <i>⚙️</i>Settings
-                        </a>
-                        <a href="/admin/logs" class="nav-item">
-                            <i>📝</i>System Logs
-                        </a>
-                    </div>
-
-
-                    <div class="nav-section">
-                        <h3>Information</h3>
-                        <a href="/auth/logout" class="nav-item">
-                            <i class="fa-solid fa-right-from-bracket"></i> Logout
-                        </a>
-                    </div>
-
-                </nav>
-            </div>
-
-            <!-- Main Content -->
-            <div class="admin-main">
-                <!-- Header -->
-                <div class="main-header">
-                    <h1>Dashboard</h1>
-                    <p>Welcome to the B-Smart management system</p>
-                </div>
-
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">Total Users</span>
-                            <div class="stat-icon users">👥</div>
-                        </div>
-                        <div class="stat-number">${totalUsers}</div>
-                        <div class="stat-change positive">
-                            <span>↗ +${userGrowthPercent}%</span>
-                            <span style="margin-left: 8px;">compared to last month</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">Ongoing Tasks</span>
-                            <div class="stat-icon tasks">📋</div>
-                        </div>
-                        <div class="stat-number">${totalTasks}</div>
-                        <div class="stat-change positive">
-                            <span>↗ +${taskGrowthPercent}%</span>
-                            <span style="margin-left: 8px;">compared to last week</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">Schedules Created</span>
-                            <div class="stat-icon schedules">📅</div>
-                        </div>
-                        <div class="stat-number">${totalSchedules}</div>
-                        <div class="stat-change positive">
-                            <span>↗ +${scheduleGrowthPercent}%</span>
-                            <span style="margin-left: 8px;">compared to last month</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">System Performance</span>
-                            <div class="stat-icon system">⚡</div>
-                        </div>
-                        <div class="stat-number">${systemPerformance}%</div>
-                        <div class="stat-change positive">
-                            <span>↗ +2%</span>
-                            <span style="margin-left: 8px;">compared to last week</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h2 class="section-title">
-                        <i>⚡</i>Quick Actions
-                    </h2>
-                    <div class="actions-grid">
-                        <a href="/admin/users/add" class="action-btn">
-                            <i>➕</i>
-                            Add New User
-                        </a>
-                        <a href="/admin/tasks/add" class="action-btn">
-                            <i>📝</i>
-                            Create New Task
-                        </a>
-                        <a href="/admin/schedules/add" class="action-btn">
-                            <i>📅</i>
-                            Create New Schedule
-                        </a>
-                        <a href="/admin/reports" class="action-btn">
-                            <i>📊</i>
-                            View Reports
-                        </a>
-                        <a href="/admin/settings" class="action-btn">
-                            <i>⚙️</i>
-                            System Settings
-                        </a>
-                        <a href="/admin/backup" class="action-btn">
-                            <i>💾</i>
-                            Backup Data
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            // Mobile menu functionality
-            document.addEventListener('DOMContentLoaded', function () {
-                const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-                const adminSidebar = document.getElementById('adminSidebar');
-                const mobileOverlay = document.getElementById('mobileOverlay');
-
-                // Toggle mobile menu
-                function toggleMobileMenu() {
-                    mobileMenuToggle.classList.toggle('active');
-                    adminSidebar.classList.toggle('mobile-open');
-                    mobileOverlay.classList.toggle('active');
-                    document.body.style.overflow = adminSidebar.classList.contains('mobile-open') ? 'hidden' : '';
-                }
-
-                // Close mobile menu
-                function closeMobileMenu() {
-                    mobileMenuToggle.classList.remove('active');
-                    adminSidebar.classList.remove('mobile-open');
-                    mobileOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-
-                // Event listeners
-                mobileMenuToggle.addEventListener('click', toggleMobileMenu);
-                mobileOverlay.addEventListener('click', closeMobileMenu);
-
-                // Close menu when clicking on nav items (mobile)
-                const navItems = document.querySelectorAll('.nav-item');
-                navItems.forEach(item => {
-                    item.addEventListener('click', function () {
-                        // Remove active class from all nav items
-                        navItems.forEach(nav => nav.classList.remove('active'));
-                        // Add active class to clicked item
-                        this.classList.add('active');
-
-                        // Close mobile menu if on mobile
-                        if (window.innerWidth <= 768) {
-                            closeMobileMenu();
-                        }
-                    });
-                });
-
-                // Handle window resize
-                window.addEventListener('resize', function () {
-                    if (window.innerWidth > 768) {
-                        closeMobileMenu();
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+            <!DOCTYPE html>
+            <html>
+
+            <head>
+                <title>System Management - B-Smart</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <!-- Bootstrap 5 CSS -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+                    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+                    crossorigin="anonymous">
+                <!-- Font Awesome -->
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+                    integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+                    crossorigin="anonymous" referrerpolicy="no-referrer" />
+                <style>
+                    body {
+                        background-color: #f0f2f5;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     }
-                });
 
-                // Add animation to stat cards
-                const statCards = document.querySelectorAll('.stat-card');
-                statCards.forEach((card, index) => {
-                    card.style.animationDelay = `${index * 0.1}s`;
-                    card.style.animation = 'fadeInUp 0.6s ease forwards';
-                });
+                    .sidebar {
+                        height: 100vh;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 280px;
+                        background-color: #fff;
+                        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+                        transition: all 0.3s ease;
+                        z-index: 1045;
+                    }
 
-                // Add CSS animation
-                const style = document.createElement('style');
-                style.textContent = `
+                    .main-content {
+                        margin-left: 280px;
+                        transition: all 0.3s ease;
+                        padding: 2rem;
+                        width: calc(100% - 280px);
+                    }
+
+                    .sidebar-header {
+                        padding: 1.5rem;
+                        text-align: center;
+                        border-bottom: 1px solid #e9ecef;
+                    }
+
+                    .sidebar-header h2 a {
+                        color: #2c3e50;
+                        font-weight: 700;
+                        text-decoration: none;
+                    }
+
+                    .sidebar-nav .nav-link {
+                        color: #34495e;
+                        padding: 0.8rem 1.5rem;
+                        display: flex;
+                        align-items: center;
+                        border-left: 3px solid transparent;
+                        transition: all 0.2s ease;
+                    }
+
+                    .sidebar-nav .nav-link:hover {
+                        background-color: #f8f9fa;
+                        color: #3498db;
+                        border-left-color: #3498db;
+                    }
+
+                    .sidebar-nav .nav-link.active {
+                        background-color: #e9ecef;
+                        color: #3498db;
+                        border-left-color: #3498db;
+                        font-weight: 600;
+                    }
+
+                    .sidebar-nav .nav-link i {
+                        width: 25px;
+                        text-align: center;
+                        margin-right: 0.5rem;
+                    }
+
+                    .nav-section-title {
+                        color: #95a5a6;
+                        font-size: 0.75rem;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        padding: 1.5rem 1.5rem 0.5rem;
+                        font-weight: 600;
+                    }
+
+                    .mobile-menu-button {
+                        display: none;
+                        position: fixed;
+                        top: 15px;
+                        left: 15px;
+                        z-index: 1041;
+                    }
+
+                    @media (max-width: 991.98px) {
+                        .sidebar {
+                            left: -280px;
+                        }
+
+                        .main-content {
+                            margin-left: 0;
+                            width: 100%;
+                        }
+
+                        .mobile-menu-button {
+                            display: block;
+                        }
+                    }
+
+                    .stat-card .stat-icon {
+                        font-size: 1.75rem;
+                        width: 60px;
+                        height: 60px;
+                    }
+
+                    .stat-card.border-left-primary {
+                        border-left: 0.25rem solid #4e73df !important;
+                    }
+
+                    .stat-card.border-left-success {
+                        border-left: 0.25rem solid #1cc88a !important;
+                    }
+
+                    .stat-card.border-left-info {
+                        border-left: 0.25rem solid #36b9cc !important;
+                    }
+
+                    .stat-card.border-left-warning {
+                        border-left: 0.25rem solid #f6c23e !important;
+                    }
+
+                    .action-btn {
+                        transition: all 0.2s ease-in-out;
+                    }
+
+                    .action-btn:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    }
+
+                    .logoCalendar:hover {
+                        color: rgb(54, 11, 51);
+                    }
+                </style>
+            </head>
+
+            <body>
+                <!-- Mobile Menu Button -->
+                <button class="btn btn-primary mobile-menu-button" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#adminSidebar" aria-controls="adminSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <!-- Sidebar (Offcanvas for mobile) -->
+                <div class="offcanvas-lg offcanvas-start sidebar" tabindex="-1" id="adminSidebar"
+                    aria-labelledby="adminSidebarLabel">
+                    <div class="offcanvas-header sidebar-header">
+                        <h2 class="offcanvas-title" id="adminSidebarLabel">
+                            <a class="logoCalendar" href="/schedule/add">B-Smart</a>
+                        </h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                            data-bs-target="#adminSidebar" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body d-flex flex-column p-0">
+                        <nav class="sidebar-nav flex-grow-1">
+                            <div class="sidebar-header">
+                                <h2>
+                                    <a class="logoCalendar" href="/schedule/add"
+                                        style="text-decoration: none;">B-Smart</a>
+                                </h2>
+                                <p>System Management</p>
+                            </div>
+                            <div>
+                                <h3 class="nav-section-title">Main Management</h3>
+                                <a href="/admin" class="nav-link active">
+                                    <i>📊</i>Dashboard
+                                </a>
+                                <a href="/admin/users" class="nav-link">
+                                    <i>👥</i>User Management
+                                </a>
+                                <a href="/admin/tasks" class="nav-link">
+                                    <i>📋</i>Task Management
+                                </a>
+                            </div>
+                            <div>
+                                <h3 class="nav-section-title">Reports</h3>
+                                <a href="/admin/reports" class="nav-link">
+                                    <i>📈</i>Statistics Report
+                                </a>
+                                <a href="/admin/analytics" class="nav-link">
+                                    <i>📊</i>Data Analytics
+                                </a>
+                            </div>
+                            <div>
+                                <h3 class="nav-section-title">System</h3>
+                                <a href="/admin/settings" class="nav-link">
+                                    <i>⚙️</i>Settings
+                                </a>
+                                <a href="/admin/logs" class="nav-link">
+                                    <i>📝</i>System Logs
+                                </a>
+                            </div>
+                            <div>
+                                <a href="/auth/logout" class="nav-link">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                                </a>
+                            </div>
+                        </nav>
+
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    <div class="container-fluid">
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom">
+                            <div>
+                                <h1 class="h2">Dashboard</h1>
+                                <p class="text-muted">Welcome to the B-Smart management system.</p>
+                            </div>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="row g-4 mb-4">
+                            <!-- Total Users Card -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="card stat-card border-left-primary shadow-sm h-100">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col me-2">
+                                                <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total
+                                                    Users</div>
+                                                <div class="h5 mb-0 fw-bold text-gray-800">${totalUsers}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ongoing Tasks Card -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="card stat-card border-left-success shadow-sm h-100">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col me-2">
+                                                <div class="text-xs fw-bold text-success text-uppercase mb-1">Total
+                                                    Tasks</div>
+                                                <div class="h5 mb-0 fw-bold text-gray-800">${totalTasks}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Schedules Created Card -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="card stat-card border-left-info shadow-sm h-100">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col me-2">
+                                                <div class="text-xs fw-bold text-info text-uppercase mb-1">Schedules
+                                                    Created</div>
+                                                <div class="h5 mb-0 fw-bold text-gray-800">${totalSchedules}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- System Performance Card -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="card stat-card border-left-warning shadow-sm h-100">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col me-2">
+                                                <div class="text-xs fw-bold text-warning text-uppercase mb-1">System
+                                                    Performance</div>
+                                                <div class="h5 mb-0 fw-bold text-gray-800">${systemPerformance}%</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-bolt fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-sm-6 col-lg-4">
+                                        <a href="/admin/users/add"
+                                            class="d-block btn btn-light border p-3 text-start action-btn">
+                                            <h6 class="mb-1"><i class="fas fa-user-plus me-2 text-primary"></i>Add New
+                                                User</h6>
+                                            <small class="text-muted">Quickly create a new user account.</small>
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4">
+                                        <a href="/admin/tasks/add"
+                                            class="d-block btn btn-light border p-3 text-start action-btn">
+                                            <h6 class="mb-1"><i class="fas fa-tasks me-2 text-success"></i>Create New
+                                                Task</h6>
+                                            <small class="text-muted">Assign a new task to a user.</small>
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4">
+                                        <a href="/schedule/add"
+                                            class="d-block btn btn-light border p-3 text-start action-btn">
+                                            <h6 class="mb-1"><i class="fas fa-calendar-plus me-2 text-info"></i>Create
+                                                New Schedule</h6>
+                                            <small class="text-muted">Go to the main scheduling page.</small>
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4">
+                                        <a href="/admin/reports"
+                                            class="d-block btn btn-light border p-3 text-start action-btn">
+                                            <h6 class="mb-1"><i class="fas fa-chart-line me-2 text-warning"></i>View
+                                                Reports</h6>
+                                            <small class="text-muted">Analyze system usage and statistics.</small>
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4">
+                                        <a href="/admin/settings"
+                                            class="d-block btn btn-light border p-3 text-start action-btn">
+                                            <h6 class="mb-1"><i class="fas fa-cog me-2 text-secondary"></i>System
+                                                Settings</h6>
+                                            <small class="text-muted">Configure system parameters.</small>
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4">
+                                        <a href="/admin/backup"
+                                            class="d-block btn btn-light border p-3 text-start action-btn">
+                                            <h6 class="mb-1"><i class="fas fa-save me-2 text-danger"></i>Backup Data
+                                            </h6>
+                                            <small class="text-muted">Create a backup of the database.</small>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Bootstrap 5 JS -->
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+                    crossorigin="anonymous"></script>
+                <script>
+                    // Mobile menu functionality
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+                        const adminSidebar = document.getElementById('adminSidebar');
+                        const mobileOverlay = document.getElementById('mobileOverlay');
+
+                        // Toggle mobile menu
+                        function toggleMobileMenu() {
+                            mobileMenuToggle.classList.toggle('active');
+                            adminSidebar.classList.toggle('mobile-open');
+                            mobileOverlay.classList.toggle('active');
+                            document.body.style.overflow = adminSidebar.classList.contains('mobile-open') ? 'hidden' : '';
+                        }
+
+                        // Close mobile menu
+                        function closeMobileMenu() {
+                            mobileMenuToggle.classList.remove('active');
+                            adminSidebar.classList.remove('mobile-open');
+                            mobileOverlay.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+
+                        // Event listeners
+                        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+                        mobileOverlay.addEventListener('click', closeMobileMenu);
+
+                        // Close menu when clicking on nav items (mobile)
+                        const navItems = document.querySelectorAll('.nav-item');
+                        navItems.forEach(item => {
+                            item.addEventListener('click', function () {
+                                // Remove active class from all nav items
+                                navItems.forEach(nav => nav.classList.remove('active'));
+                                // Add active class to clicked item
+                                this.classList.add('active');
+
+                                // Close mobile menu if on mobile
+                                if (window.innerWidth <= 768) {
+                                    closeMobileMenu();
+                                }
+                            });
+                        });
+
+                        // Handle window resize
+                        window.addEventListener('resize', function () {
+                            if (window.innerWidth > 768) {
+                                closeMobileMenu();
+                            }
+                        });
+
+                        // Add animation to stat cards
+                        const statCards = document.querySelectorAll('.stat-card');
+                        statCards.forEach((card, index) => {
+                            card.style.animationDelay = `${index * 0.1}s`;
+                            card.style.animation = 'fadeInUp 0.6s ease forwards';
+                        });
+
+                        // Add CSS animation
+                        const style = document.createElement('style');
+                        style.textContent = `
                     @keyframes fadeInUp {
                         from {
                             opacity: 0;
@@ -769,16 +437,17 @@
                         }
                     }
                 `;
-                document.head.appendChild(style);
+                        document.head.appendChild(style);
 
-                // Smooth scroll for sidebar on mobile
-                if (window.innerWidth <= 768) {
-                    adminSidebar.addEventListener('touchstart', function (e) {
-                        this.style.overflowY = 'auto';
+                        // Smooth scroll for sidebar on mobile
+                        if (window.innerWidth <= 768) {
+                            adminSidebar.addEventListener('touchstart', function (e) {
+                                this.style.overflowY = 'auto';
+                            });
+                        }
                     });
-                }
-            });
-        </script>
-    </body>
+                </script>
 
-    </html>
+            </body>
+
+            </html>

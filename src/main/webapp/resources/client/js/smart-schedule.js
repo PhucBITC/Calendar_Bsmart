@@ -72,7 +72,7 @@ export function initSmartSchedule() {
       generateBtn.textContent = "Đang sinh lịch...";
 
       console.log("Making API call..."); // Debug log
-      const response = await fetch('/schedule/api/generate-task-schedule', {
+      const response = await fetch('/task/api/generate-task-schedule', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,103 +114,44 @@ export function initSmartSchedule() {
       applyBtn.disabled = true;
       applyBtn.textContent = "Đang áp dụng...";
 
-      let successCount = 0;
-      let errorCount = 0;
+      const schedulesToApply = generatedSchedules.map(schedule => ({
+        taskTitle: schedule.taskTitle,
+        description: schedule.taskDescription,
+        dayOfWeek: schedule.dayOfWeek,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        color: getPriorityColor(schedule.priority),
+        deadline: schedule.deadline, // Thêm deadline
+        estimatedDuration: schedule.estimatedDuration // Thêm thời lượng
+      }));
 
-      for (const schedule of generatedSchedules) {
-        try {
-          // Tạo task trước
-          const taskFormData = new FormData();
-          taskFormData.append("title", schedule.taskTitle);
-          taskFormData.append("description", schedule.taskDescription);
-          taskFormData.append("priority", schedule.priority);
-          taskFormData.append("deadline", schedule.deadline);
-          taskFormData.append("estimatedDuration", schedule.estimatedDuration);
+      const response = await fetch('/task/api/apply-schedules', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(schedulesToApply)
+      });
 
-          const taskResponse = await fetch('/tasks/api/save', {
-            method: 'POST',
-            body: taskFormData
-          });
+      const result = await response.json();
 
-          const taskResult = await taskResponse.json();
-
-          if (taskResult.success) {
-            // Sau đó tạo schedule
-            const scheduleFormData = new FormData();
-            scheduleFormData.append("description", schedule.taskTitle);
-            scheduleFormData.append("dayOfWeek", schedule.dayOfWeek);
-            scheduleFormData.append("startTime", schedule.startTime);
-            scheduleFormData.append("endTime", schedule.endTime);
-            scheduleFormData.append("color", getPriorityColor(schedule.priority));
-
-            console.log("Creating schedule with data:", {
-              description: schedule.taskTitle,
-              dayOfWeek: schedule.dayOfWeek,
-              startTime: schedule.startTime,
-              endTime: schedule.endTime,
-              color: getPriorityColor(schedule.priority)
-            });
-
-            console.log("FormData entries:");
-            for (let [key, value] of scheduleFormData.entries()) {
-              console.log(`  ${key}: ${value}`);
-            }
-
-            const scheduleResponse = await fetch('/schedule/api/save', {
-              method: 'POST',
-              body: scheduleFormData
-            });
-
-            const scheduleResult = await scheduleResponse.json();
-            console.log("Schedule creation result:", scheduleResult);
-
-            if (scheduleResult.success) {
-              successCount++;
-            } else {
-              errorCount++;
-            }
-          } else {
-            errorCount++;
-          }
-        } catch (error) {
-          errorCount++;
-        }
-      }
-
-      if (successCount > 0) {
-        toaster.success(`Đã tạo thành công ${successCount} lịch trình!`);
-        if (errorCount > 0) {
-          toaster.error(`${errorCount} lịch trình bị lỗi`);
-        }
-
-        // Close dialog and refresh calendar
+      if (result.success) {
+        toaster.success(result.message || "Đã áp dụng lịch trình thành công!");
         dialog.close();
-
-        // Force refresh calendar data
+        // Refresh calendar
         setTimeout(() => {
-          // Dispatch multiple events to ensure calendar updates
-          document.dispatchEvent(new CustomEvent("events-change", { bubbles: true }));
-          document.dispatchEvent(new CustomEvent("calendar-refresh", { bubbles: true }));
-
-          // Also try to sync from server
           const eventStore = window.eventStore;
           if (eventStore && typeof eventStore.syncFromServer === 'function') {
             eventStore.syncFromServer();
           }
-
-          // If still not visible, reload page after 2 seconds
-          setTimeout(() => {
-            console.log("Reloading page to show new schedules...");
-            window.location.reload();
-          }, 2000);
         }, 500);
       } else {
-        toaster.error("Không thể tạo lịch trình nào");
+        toaster.error(result.message || "Không thể áp dụng lịch trình");
       }
 
     } catch (error) {
       console.error("Apply schedules error:", error);
-      toaster.error("Lỗi khi áp dụng lịch trình");
+      toaster.error("Lỗi khi áp dụng lịch trình: " + error.message);
     } finally {
       applyBtn.disabled = false;
       applyBtn.textContent = "Áp dụng tất cả";
