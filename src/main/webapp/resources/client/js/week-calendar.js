@@ -199,24 +199,26 @@ function calculateEventsDynamicStyles(events) {
 
     console.log("Start time in minutes:", startTimeInMinutes);
     console.log("End time in minutes:", endTimeInMinutes);
+    // CẤU HÌNH: Chiều cao 1 ô giờ (bạn chỉnh số 60 này bằng đúng height trong CSS nhé)
+    const pixelsPerHour = 60;
+    const totalHeight = 24 * pixelsPerHour; // Tổng chiều cao lịch 24h
 
-    // Calculate percentages based on 24-hour day (0-1440 minutes)
-    const topPercentage = 100 * (startTimeInMinutes / 1440);
-    const bottomPercentage = 100 - 100 * (endTimeInMinutes / 1440);
+    // Tính vị trí theo Pixels
+    const topPixels = (startTimeInMinutes / 60) * pixelsPerHour;
+
+    // Tính chiều cao (height) thay vì bottom để tránh lỗi lệch do tổng chiều cao container không khớp
+    const heightPixels = ((endTimeInMinutes - startTimeInMinutes) / 60) * pixelsPerHour;
+
+    // Giữ nguyên tính toán chiều ngang (left/right) theo % vì nó chia cột
     const leftPercentage = columnWidth * eventGroupItem.columnIndex;
     const rightPercentage = columnWidth * (totalColumns - eventGroupItem.columnIndex - eventGroupItem.columnSpan);
-
-    console.log("Calculated top:", topPercentage.toFixed(2) + "%");
-    console.log("Calculated bottom:", bottomPercentage.toFixed(2) + "%");
-    console.log("Calculated left:", leftPercentage.toFixed(2) + "%");
-    console.log("Calculated right:", rightPercentage.toFixed(2) + "%");
-    console.log("Column info - Index:", eventGroupItem.columnIndex, "Span:", eventGroupItem.columnSpan, "Total:", totalColumns);
 
     return {
       event: eventGroupItem.event,
       styles: {
-        top: `${topPercentage}%`,
-        bottom: `${bottomPercentage}%`,
+        top: `${topPixels}px`,      // Dùng px
+        height: `${heightPixels}px`, // Dùng px
+        bottom: 'auto',              // Reset bottom để tránh xung đột CSS
         left: `${leftPercentage}%`,
         right: `${rightPercentage}%`
       }

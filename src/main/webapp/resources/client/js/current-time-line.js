@@ -8,12 +8,11 @@ export function initCurrentTimeLine() {
      */
     const observer = new MutationObserver(function (mutations, obs) {
         const weekCalendar = document.querySelector('[data-week-calendar]');
-        if (weekCalendar) {
-            // Khi lịch tuần đã xuất hiện, bắt đầu thiết lập đường kẻ thời gian
+        // Kiểm tra nếu lịch hiển thị và chưa có đường kẻ (tránh trùng lặp khi observer chạy nhiều lần)
+        if (weekCalendar && !weekCalendar.querySelector('#current-time-line')) {
             setupCurrentTimeLine(weekCalendar);
-            // Ngừng theo dõi để tránh chạy lại không cần thiết
-            obs.disconnect();
         }
+        // Không ngắt kết nối observer để nó tiếp tục theo dõi việc chuyển đổi view (Week/Day/Month)
     });
 
     // Bắt đầu theo dõi các thay đổi bên trong container [data-calendar]
@@ -51,6 +50,11 @@ function setupCurrentTimeLine(calendarElement) {
 
     // 4. Hàm cập nhật vị trí, được gọi liên tục bởi requestAnimationFrame
     function update() {
+        // Nếu đường kẻ bị xóa khỏi DOM (do chuyển view), dừng vòng lặp cập nhật
+        if (!line.isConnected) {
+            return;
+        }
+
         const now = new Date();
         const minutesFromMidnight = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
         line.style.top = `${minutesFromMidnight * pixelsPerMinute}px`;

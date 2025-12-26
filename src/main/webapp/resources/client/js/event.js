@@ -25,6 +25,9 @@ export function initDynamicEvent(parent, event, dynamicStyles) {
   eventElement.style.left = dynamicStyles.left;
   eventElement.style.bottom = dynamicStyles.bottom;
   eventElement.style.right = dynamicStyles.right;
+  if (dynamicStyles.height) {
+    eventElement.style.height = dynamicStyles.height;
+  }
 
   eventElement.dataset.eventDynamic = true;
 
@@ -69,30 +72,30 @@ export function timeStringToMinutes(time) {
   if (typeof time === "number") {
     return time; // Already in minutes
   }
-  
+
   if (typeof time === "string") {
     // Handle "4:24 PM" format
     if (time.includes("AM") || time.includes("PM")) {
       const [timePart, period] = time.split(" ");
       const [hours, minutes] = timePart.split(":").map(Number);
       let hour24 = hours;
-      
+
       if (period === "PM" && hours !== 12) {
         hour24 += 12;
       } else if (period === "AM" && hours === 12) {
         hour24 = 0;
       }
-      
+
       return hour24 * 60 + minutes;
     }
-    
+
     // Handle "16:24" format
     if (time.includes(":")) {
       const [hours, minutes] = time.split(":").map(Number);
       return hours * 60 + minutes;
     }
   }
-  
+
   // Fallback to 0 if invalid format
   console.warn("Invalid time format:", time);
   return 0;
@@ -115,7 +118,7 @@ export function eventCollidesWith(eventA, eventB) {
   const endTimeA = timeStringToMinutes(eventA.endTime);
   const startTimeB = timeStringToMinutes(eventB.startTime);
   const endTimeB = timeStringToMinutes(eventB.endTime);
-  
+
   const maxStartTime = Math.max(startTimeA, startTimeB);
   const minEndTime = Math.min(endTimeA, endTimeB);
 
@@ -124,7 +127,7 @@ export function eventCollidesWith(eventA, eventB) {
 
 export function eventTimeToDate(event, eventTime) {
   let hours = 0, minutes = 0;
-  
+
   if (typeof eventTime === "string") {
     // Handle "4:24 PM" format
     if (eventTime.includes("AM") || eventTime.includes("PM")) {
@@ -132,13 +135,13 @@ export function eventTimeToDate(event, eventTime) {
       const [h, m] = timePart.split(":");
       hours = parseInt(h, 10);
       minutes = parseInt(m, 10);
-      
+
       if (period === "PM" && hours !== 12) {
         hours += 12;
       } else if (period === "AM" && hours === 12) {
         hours = 0;
       }
-    } 
+    }
     // Handle "16:24" format
     else if (eventTime.includes(":")) {
       const [h, m] = eventTime.split(":");
@@ -162,7 +165,7 @@ export function eventTimeToDate(event, eventTime) {
 export function validateEvent(event) {
   const startTimeMinutes = timeStringToMinutes(event.startTime);
   const endTimeMinutes = timeStringToMinutes(event.endTime);
-  
+
   if (startTimeMinutes >= endTimeMinutes) {
     return "Event end time must be after start time";
   }
