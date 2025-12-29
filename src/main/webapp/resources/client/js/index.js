@@ -16,6 +16,7 @@ import { initSync } from "./sync.js";
 import { initSmartSchedule } from "./smart-schedule.js";
 import { initSmartScheduleButton } from "./smart-schedule-button.js";
 import { initCurrentTimeLine } from "./current-time-line.js";
+import { initCalendarTheme } from "./calendar-theme.js";
 import "./custom.js"; // 👈 thêm dòng này
 
 const eventStore = initEventStore();
@@ -37,3 +38,4 @@ initSync();
 initSmartSchedule();
 initSmartScheduleButton();
 initCurrentTimeLine(); // Khởi tạo đường kẻ thời gian
+initCalendarTheme(); // Khởi tạo giao diện đẹp (CSS Injector)
