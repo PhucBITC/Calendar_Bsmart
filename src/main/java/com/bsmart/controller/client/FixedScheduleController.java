@@ -173,11 +173,13 @@ public class FixedScheduleController {
             savedSchedulesData.add(convertScheduleToMap(saved));
         }
 
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("schedules", savedSchedulesData);
-        responseData.put("isRepeating", true);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Schedules saved successfully");
+        response.put("data", savedSchedulesData);
+        response.put("isRepeating", true);
 
-        return ResponseEntity.ok(createSuccessResponse("Schedules saved successfully", responseData));
+        return ResponseEntity.ok(response);
     }
 
     private LocalTime stringToLocalTime(String timeString) {
@@ -210,12 +212,19 @@ public class FixedScheduleController {
 
         for (int i = 0; i < repeatCount; i++) {
             LocalDate date;
-            if ("daily".equals(repeatType)) {
-                date = startDate.plusDays(i);
-            } else if ("weekly".equals(repeatType)) {
-                date = startDate.plusWeeks(i);
-            } else {
-                date = startDate.plusMonths(i);
+            switch (repeatType) {
+                case "daily":
+                    date = startDate.plusDays(i);
+                    break;
+                case "weekly":
+                    date = startDate.plusWeeks(i);
+                    break;
+                case "monthly":
+                    date = startDate.plusMonths(i);
+                    break;
+                default:
+                    // If repeatType is unknown, skip this iteration
+                    continue;
             }
             schedules.add(cloneScheduleForDate(originalSchedule, date));
         }

@@ -29,6 +29,13 @@ export function initEventStore() {
 
     if (deleteMode === 'single') {
       eventsToDelete = [deletedEvent];
+    } else if (deleteMode === 'daily') {
+      // Tìm các sự kiện cùng tên, cùng giờ (xảy ra hàng ngày)
+      eventsToDelete = allEvents.filter(e =>
+        e.title === deletedEvent.title &&
+        e.startTime === deletedEvent.startTime &&
+        e.endTime === deletedEvent.endTime
+      );
     } else if (deleteMode === 'weekly') {
       // Tìm các sự kiện cùng tên, cùng giờ, cùng thứ trong tuần
       eventsToDelete = allEvents.filter(e =>

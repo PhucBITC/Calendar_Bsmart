@@ -424,7 +424,7 @@
                     </div>
 
                     <div class="dialog__content">
-                        <p>Do you really want to delete <strong data-event-delete-title></strong>?</p>
+                        <p><strong data-event-delete-title></strong></p>
                     </div>
 
                     <div class="dialog__footer">

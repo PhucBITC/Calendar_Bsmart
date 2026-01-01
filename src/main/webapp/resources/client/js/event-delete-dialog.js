@@ -30,7 +30,7 @@ export function initEventDeleteDialog() {
 
 function fillEventDeleteDialog(parent, event) {
   const eventDeleteTitleElement = parent.querySelector("[data-event-delete-title]");
-  eventDeleteTitleElement.textContent = `Bạn có muốn xóa sự kiện "${event.title}"?`;
+  eventDeleteTitleElement.textContent = `Do you want to delete the event"${event.title}"?`;
 
   // Tìm hoặc tạo container cho các tùy chọn xóa
   let optionsContainer = parent.querySelector(".delete-options-container");
@@ -42,16 +42,36 @@ function fillEventDeleteDialog(parent, event) {
     eventDeleteTitleElement.after(optionsContainer);
   }
 
-  // Render các tùy chọn
+  // Render options 
   optionsContainer.innerHTML = `
-    <div style="margin-bottom: 8px;">
-      <label style="display: flex; align-items: center; cursor: pointer;"><input type="radio" name="delete-mode" value="single" checked style="margin-right: 8px;"> Chỉ xóa sự kiện này</label>
-    </div>
-    <div style="margin-bottom: 8px;">
-      <label style="display: flex; align-items: center; cursor: pointer;"><input type="radio" name="delete-mode" value="weekly" style="margin-right: 8px;"> Xóa các sự kiện này theo tuần</label>
-    </div>
-    <div>
-      <label style="display: flex; align-items: center; cursor: pointer;"><input type="radio" name="delete-mode" value="monthly" style="margin-right: 8px;"> Xóa các sự kiện này theo tháng</label>
-    </div>
-  `;
+  <div style="margin-bottom: 8px;">
+    <label style="display: flex; align-items: center; cursor: pointer;">
+      <input type="radio" name="delete-mode" value="single" checked style="margin-right: 8px;">
+      Delete only this event
+    </label>
+  </div>
+
+  <div style="margin-bottom: 8px;">
+    <label style="display: flex; align-items: center; cursor: pointer;">
+      <input type="radio" name="delete-mode" value="daily" style="margin-right: 8px;">
+      Delete daily events
+    </label>
+  </div>
+
+  <div style="margin-bottom: 8px;">
+    <label style="display: flex; align-items: center; cursor: pointer;">
+      <input type="radio" name="delete-mode" value="weekly" style="margin-right: 8px;">
+      Delete weekly events
+    </label>
+  </div>
+
+  <div>
+    <label style="display: flex; align-items: center; cursor: pointer;">
+      <input type="radio" name="delete-mode" value="monthly" style="margin-right: 8px;">
+      Delete monthly events
+    </label>
+  </div>
+  
+`;
+
 }
