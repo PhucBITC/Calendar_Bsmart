@@ -18,7 +18,7 @@ export function initEventForm(toaster) {
     try {
       // Gửi dữ liệu lên server qua API
       const formData = new FormData(formElement);
-      
+
       const response = await fetch('/schedule/api/save', {
         method: 'POST',
         body: formData
@@ -29,12 +29,12 @@ export function initEventForm(toaster) {
       if (result.success) {
         // Lấy event với ID thật từ database
         const savedEvent = result.data;
-        
+
         if (result.isRepeating && Array.isArray(savedEvent)) {
           // Xử lý multiple schedules (repeating)
           console.log("=== SAVED REPEATING EVENTS ===");
           console.log("Number of schedules:", savedEvent.length);
-          
+
           // Tạo events cho tất cả schedules
           const eventsWithRealIds = savedEvent.map(schedule => ({
             id: schedule.id,
@@ -89,7 +89,7 @@ export function initEventForm(toaster) {
 
           toaster.success("Schedule saved successfully!");
         }
-        
+
         // Close dialog
         const dialog = formElement.closest('[data-dialog]');
         if (dialog) {
@@ -111,25 +111,28 @@ export function initEventForm(toaster) {
     switchToCreateMode(date, startTime, endTime) {
       mode = "create";
       fillFormWithDate(formElement, date, startTime, endTime);
-      
+
       // Clear ID cho create mode
       const idInput = formElement.querySelector("#id");
       if (idInput) {
         idInput.value = "";
       }
+      toggleUpdateOptions(formElement, false);
     },
     switchToEditMode(event) {
       mode = "edit";
       console.log("=== EDIT MODE ===");
       console.log("Event ID:", event.id);
       console.log("Full event:", event);
-      
+
       fillFormWithEvent(formElement, event);
+      toggleUpdateOptions(formElement, true);
     },
     reset() {
       const idInput = formElement.querySelector("#id");
       if (idInput) idInput.value = "";
       formElement.reset();
+      toggleUpdateOptions(formElement, false);
     }
   };
 }
@@ -144,7 +147,7 @@ function fillFormWithEvent(formElement, event) {
   console.log("=== FILL FORM WITH EVENT ===");
   console.log("Event ID:", event.id);
   console.log("Event title/description:", event.title || event.description);
-  
+
   // Set ID - Nếu không có ID thì call API để lấy
   const idInput = formElement.querySelector("#id");
   if (event.id) {
@@ -158,20 +161,20 @@ function fillFormWithEvent(formElement, event) {
       }
     });
   }
-  
+
   formElement.querySelector("#title").value = event.title || event.description || "";
-  
+
   // Handle date
   if (event.date) {
-    const dateStr = event.date instanceof Date ? 
-      event.date.toISOString().substr(0, 10) : 
+    const dateStr = event.date instanceof Date ?
+      event.date.toISOString().substr(0, 10) :
       new Date(event.date).toISOString().substr(0, 10);
     formElement.querySelector("#date").value = dateStr;
   }
-  
+
   formElement.querySelector("#start-time").value = event.startTime || "";
   formElement.querySelector("#end-time").value = event.endTime || "";
-  
+
   // Set color
   const colorInput = formElement.querySelector(`[value='${event.color}']`);
   if (colorInput) {
@@ -184,15 +187,15 @@ async function findEventIdInDatabase(event) {
   try {
     const response = await fetch('/schedule/api/schedules');
     const schedules = await response.json();
-    
+
     // Tìm schedule trùng khớp với event
-    const found = schedules.find(schedule => 
+    const found = schedules.find(schedule =>
       schedule.description === (event.title || event.description) &&
       schedule.startTime === event.startTime &&
       schedule.endTime === event.endTime &&
       schedule.color === event.color
     );
-    
+
     return found ? found.id : null;
   } catch (error) {
     console.error("Error finding event ID:", error);
@@ -218,4 +221,41 @@ function formIntoEvent(formElement) {
     endTime: endTime,
     color: color
   };
+}
+
+function toggleUpdateOptions(formElement, show) {
+  const repeatLabel = formElement.querySelector("label[for='repeat']");
+  const repeatSelect = formElement.querySelector("#repeat");
+
+  // Xóa container cũ nếu có (để dọn dẹp code cũ)
+  const oldContainer = formElement.querySelector(".update-options-container");
+  if (oldContainer) {
+    oldContainer.remove();
+  }
+
+  if (!repeatLabel || !repeatSelect) return;
+
+  if (show) {
+    // Chế độ Edit: Tận dụng dropdown Repeat để làm Update Scope
+    repeatLabel.textContent = "Update Scope";
+    repeatSelect.name = "updateMode"; // Đổi name để Controller nhận diện là updateMode
+
+    repeatSelect.innerHTML = `
+      <option value="single" selected>Only this event</option>
+      <option value="daily">This and daily events</option>
+      <option value="weekly">This and weekly events</option>
+      <option value="monthly">This and monthly events</option>
+    `;
+  } else {
+    // Chế độ Create: Trả lại dropdown Repeat như cũ
+    repeatLabel.textContent = "Repeat";
+    repeatSelect.name = "repeatType";
+
+    repeatSelect.innerHTML = `
+      <option value="none" selected>No repeat</option>
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+    `;
+  }
 }

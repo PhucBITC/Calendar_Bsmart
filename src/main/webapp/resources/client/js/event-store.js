@@ -7,7 +7,15 @@ export function initEventStore() {
     console.log("Created event ID:", createdEvent.id);
 
     const events = getEventsFromLocalStorage();
-    events.push(createdEvent);
+
+    // FIX: Kiểm tra nếu ID đã tồn tại thì update, chưa có thì mới push
+    const existingIndex = events.findIndex(e => e.id && e.id === createdEvent.id);
+    if (existingIndex !== -1) {
+      events[existingIndex] = createdEvent;
+    } else {
+      events.push(createdEvent);
+    }
+
     saveEventsIntoLocalStorage(events);
 
     document.dispatchEvent(new CustomEvent("events-change", {

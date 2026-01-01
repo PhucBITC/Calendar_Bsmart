@@ -80,6 +80,12 @@ public class FixedScheduleController {
             }
             schedule.setUser(currentUser);
 
+            // Kiểm tra xem có phải là update hàng loạt không
+            String updateMode = request.getParameter("updateMode");
+            if (schedule.getId() != null && updateMode != null && !updateMode.equals("single") && !updateMode.isEmpty()) {
+                return updateRepeatingSchedules(schedule, updateMode, currentUser);
+            }
+
             String repeatType = request.getParameter("repeatType");
             if (repeatType != null && !repeatType.equals("none")) {
                 return saveRepeatingSchedules(schedule, repeatType);
@@ -182,6 +188,60 @@ public class FixedScheduleController {
         return ResponseEntity.ok(response);
     }
 
+    private ResponseEntity<Map<String, Object>> updateRepeatingSchedules(FixedSchedule newScheduleData, String updateMode, User user) {
+        // 1. Lấy thông tin sự kiện gốc từ DB (trước khi bị sửa) để làm căn cứ tìm kiếm
+        FixedSchedule originalEvent = fixedScheduleService.getScheduleById(newScheduleData.getId());
+        if (originalEvent == null) {
+            return ResponseEntity.badRequest().body(createErrorResponse("Original event not found"));
+        }
+
+        // 2. Lấy tất cả lịch của user để lọc
+        List<FixedSchedule> allSchedules = fixedScheduleService.getSchedulesByUser(user);
+        List<FixedSchedule> schedulesToUpdate = new ArrayList<>();
+
+        // 3. Lọc các sự kiện liên quan dựa trên updateMode và thông tin CŨ (originalEvent)
+        for (FixedSchedule s : allSchedules) {
+            // Điều kiện cơ bản: Cùng tên, cùng giờ bắt đầu/kết thúc (so với dữ liệu cũ)
+            boolean isMatch = s.getDescription().equals(originalEvent.getDescription()) &&
+                              s.getStartTime().equals(originalEvent.getStartTime()) &&
+                              s.getEndTime().equals(originalEvent.getEndTime());
+
+            if (isMatch) {
+                LocalDate date = LocalDate.parse(s.getDayOfWeek());
+                LocalDate originalDate = LocalDate.parse(originalEvent.getDayOfWeek());
+                boolean shouldUpdate = false;
+
+                switch (updateMode) {
+                    case "daily": shouldUpdate = true; break;
+                    case "weekly": if (date.getDayOfWeek() == originalDate.getDayOfWeek()) shouldUpdate = true; break;
+                    case "monthly": if (date.getDayOfMonth() == originalDate.getDayOfMonth()) shouldUpdate = true; break;
+                }
+
+                if (shouldUpdate) {
+                    schedulesToUpdate.add(s);
+                }
+            }
+        }
+
+        // 4. Lưu tất cả với thông tin MỚI
+        List<Map<String, Object>> savedData = new ArrayList<>();
+        for (FixedSchedule s : schedulesToUpdate) {
+            s.setDescription(newScheduleData.getDescription());
+            s.setStartTime(newScheduleData.getStartTime());
+            s.setEndTime(newScheduleData.getEndTime());
+            s.setColor(newScheduleData.getColor());
+            fixedScheduleService.saveSchedule(s);
+            savedData.add(convertScheduleToMap(s));
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Updated " + savedData.size() + " events successfully");
+        response.put("data", savedData);
+        response.put("isRepeating", true); // Báo cho client biết đây là update hàng loạt
+        return ResponseEntity.ok(response);
+    }
+
     private LocalTime stringToLocalTime(String timeString) {
         if (timeString == null || timeString.trim().isEmpty()) {
             return null;
@@ -226,7 +286,14 @@ public class FixedScheduleController {
                     // If repeatType is unknown, skip this iteration
                     continue;
             }
-            schedules.add(cloneScheduleForDate(originalSchedule, date));
+
+            FixedSchedule clone = cloneScheduleForDate(originalSchedule, date);
+            // FIX: Nếu là lần lặp đầu tiên (ngày gốc) và sự kiện gốc có ID (đang edit),
+            // gán lại ID để thực hiện Update thay vì Insert mới.
+            if (i == 0 && originalSchedule.getId() != null) {
+                clone.setId(originalSchedule.getId());
+            }
+            schedules.add(clone);
         }
         return schedules;
     }
